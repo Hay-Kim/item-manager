@@ -141,6 +141,18 @@
             border-bottom: 2px solid #ff6347;
             padding-bottom: 5px;
         }
+
+        .edit-form {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #444;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            box-sizing: border-box;
+            border-left: 5px solid #ff6347;
+        }
     </style>
 </head>
 
@@ -168,11 +180,21 @@
             <input type="file" id="newImage" accept="image/*" capture="camera">
             <button onclick="addItem()">Add</button>
         </div>
-        <div>
-            <h2>Delete Item</h2>
-            <input type="text" id="deleteCode" placeholder="Item Code to Delete">
-            <button onclick="deleteItem()">Delete</button>
-        </div>
+    </div>
+
+    <!-- 수정 폼 -->
+    <div class="container edit-form" id="editForm">
+        <h2>Edit Item</h2>
+        <input type="hidden" id="editIndex">
+        <input type="text" id="editCode" placeholder="Item Code">
+        <input type="text" id="editName" placeholder="Item Name">
+        <input type="text" id="editLocation" placeholder="Location">
+        <input type="text" id="editMemo" placeholder="Memo">
+        <input type="text" id="editColor" placeholder="Color">
+        <!-- 사진 업로드 기능 -->
+        <input type="file" id="editImage" accept="image/*" capture="camera">
+        <button onclick="saveItem()">Save</button>
+        <button onclick="cancelEdit()">Cancel</button>
     </div>
 
     <button class="inventory-button" onclick="goToInventory()">Check Inventory</button>
@@ -221,7 +243,7 @@
             );
             
             if (results.length > 0) {
-                results.forEach(item => {
+                results.forEach((item, index) => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
                         <p><strong>Item Code:</strong> ${item.code}</p>
@@ -229,7 +251,9 @@
                         <p><strong>Location:</strong> ${item.location}</p>
                         <p><strong>Memo:</strong> ${item.memo}</p>
                         <p><strong>Color:</strong> ${item.color}</p>
-                        <img src="${item.image}" alt="${item.name}" style="width: 100px; height: auto;">
+                        ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 100px; height: auto;">` : ''}
+                        <button onclick="editItem(${index})">Edit</button>
+                        <button onclick="deleteItem(${index})">Delete</button>
                         <hr>
                     `;
                     resultDiv.appendChild(itemDiv);
@@ -268,6 +292,7 @@
                         saveItemsToLocalStorage();
                         alert('Item added successfully.');
                         clearAddItemForm();
+                        searchItem();  // 새로고침 없이 추가된 아이템을 즉시 표시
                     };
                     reader.readAsDataURL(newImageFile);
                 } else {
@@ -275,6 +300,7 @@
                     saveItemsToLocalStorage();
                     alert('Item added successfully.');
                     clearAddItemForm();
+                    searchItem();  // 새로고침 없이 추가된 아이템을 즉시 표시
                 }
             } else {
                 alert('Please enter item code, name, and location.');
@@ -290,16 +316,55 @@
             document.getElementById('newImage').value = '';
         }
 
-        function deleteItem() {
-            const deleteCode = document.getElementById('deleteCode').value.trim();
+        function deleteItem(index) {
+            items.splice(index, 1);
+            saveItemsToLocalStorage();
+            alert('Item deleted successfully.');
+            searchItem();  // 새로고침 없이 삭제된 결과를 즉시 표시
+        }
 
-            if (deleteCode) {
-                items = items.filter(item => item.code !== deleteCode);
-                saveItemsToLocalStorage();
-                alert('Item deleted successfully.');
+        function editItem(index) {
+            const item = items[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editCode').value = item.code;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editLocation').value = item.location;
+            document.getElementById('editMemo').value = item.memo;
+            document.getElementById('editColor').value = item.color;
+            document.getElementById('editImage').value = '';  // 이미지 입력 초기화
+            document.getElementById('editForm').style.display = 'block';
+            window.scrollTo(0, document.getElementById('editForm').offsetTop);  // 수정 폼으로 스크롤 이동
+        }
+
+        function saveItem() {
+            const index = document.getElementById('editIndex').value;
+            items[index].code = document.getElementById('editCode').value.trim();
+            items[index].name = document.getElementById('editName').value.trim();
+            items[index].location = document.getElementById('editLocation').value.trim();
+            items[index].memo = document.getElementById('editMemo').value.trim();
+            items[index].color = document.getElementById('editColor').value.trim();
+
+            const editImageFile = document.getElementById('editImage').files[0];
+            if (editImageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    items[index].image = e.target.result;
+                    saveItemsToLocalStorage();
+                    alert('Item updated successfully.');
+                    cancelEdit();
+                    searchItem();  // 새로고침 없이 수정된 결과를 즉시 표시
+                };
+                reader.readAsDataURL(editImageFile);
             } else {
-                alert('Please enter the item code to delete.');
+                saveItemsToLocalStorage();
+                alert('Item updated successfully.');
+                cancelEdit();
+                searchItem();  // 새로고침 없이 수정된 결과를 즉시 표시
             }
+        }
+
+        function cancelEdit() {
+            document.getElementById('editForm').style.display = 'none';
         }
     </script>
 </body>
