@@ -59,6 +59,7 @@
             height: auto;
             margin-top: 10px;
             border-radius: 5px;
+            display: block;
         }
 
         .back-button {
@@ -109,7 +110,7 @@
                         <p><strong>Location:</strong> ${item.location}</p>
                         <p><strong>Memo:</strong> ${item.memo}</p>
                         <p><strong>Color:</strong> ${item.color}</p>
-                        <img src="${item.image}" alt="${item.name}">
+                        ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
                         <hr>
                     `;
                     itemListDiv.appendChild(itemDiv);
