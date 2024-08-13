@@ -24,6 +24,12 @@
             text-align: center;
         }
 
+        .logo {
+            width: 150px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
         .container {
             width: 100%;
             max-width: 600px;
@@ -70,6 +76,8 @@
 </head>
 
 <body>
+    <img src="https://pngimg.com/uploads/box/box_PNG5.png" alt="홈 로고" class="logo" onclick="refreshPage()">
+
     <h1>물건 위치 검색 및 관리</h1>
 
     <div class="container">
@@ -107,6 +115,10 @@
             if (savedItems) {
                 items = JSON.parse(savedItems);
             }
+        }
+
+        function refreshPage() {
+            window.location.reload(); // 페이지 새로고침
         }
 
         window.onload = function() {
