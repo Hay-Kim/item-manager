@@ -27,6 +27,12 @@
             margin-bottom: 20px;
             font-size: 2.5em;
             text-transform: uppercase;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        h1:hover {
+            color: #e5533d;
         }
 
         .container {
@@ -155,7 +161,7 @@
 </head>
 
 <body>
-    <h1>재고 목록</h1>
+    <h1 onclick="goHome()">재고 목록</h1>
 
     <div class="container">
         <!-- 정렬 제목 -->
@@ -230,6 +236,10 @@
 
         function goBack() {
             window.location.href = 'index.html'; // 홈 페이지로 이동
+        }
+
+        function goHome() {
+            window.location.href = 'index.html'; // 타이틀 클릭 시 홈 페이지로 이동
         }
 
         function editItem(index) {
