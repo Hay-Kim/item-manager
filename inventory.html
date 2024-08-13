@@ -4,115 +4,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>재고 관리</title>
+    <title>Inventory Control System</title>
     <style>
         body {
-            font-family: 'Courier New', monospace;
-            background-color: #222;
-            color: #eee;
+            font-family: 'Chicago', sans-serif;
+            background-color: #4A76A8;
+            color: #000;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
-            text-shadow: 2px 2px #000;
+            text-shadow: none;
             position: relative;
         }
 
-        h1 {
-            color: #ff6347;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 2.5em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: color 0.3s ease;
+        .window {
+            width: 90%;
+            max-width: 600px;
+            padding: 15px;
+            background-color: #C3C7CB;
+            border: 2px solid #000;
+            border-radius: 4px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
         }
 
-        h1:hover {
-            color: #e5533d;
+        .window-header {
+            background-color: #000;
+            color: #FFF;
+            padding: 5px;
+            font-size: 1.2em;
+            text-align: center;
+            border-bottom: 2px solid #000;
+        }
+
+        h1 {
+            color: #000;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .container {
-            width: 80%;
-            max-width: 700px;
-            margin-top: 30px;
-            padding: 25px;
-            background-color: #333;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border-left: 8px solid #ff6347;
+            width: 100%;
+            padding: 15px;
+            background-color: #E4E4E4;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            margin-top: 10px;
         }
 
         .item-list {
-            margin-top: 25px;
-            padding: 15px;
-            background-color: #444;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #D4D4D4;
+            border-radius: 4px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
             width: 100%;
             box-sizing: border-box;
-            border-left: 5px solid #ff6347;
+            border: 1px solid #7D7D7D;
+            text-align: left;
         }
 
         .item-list p {
-            margin: 10px 0;
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
         }
 
         .item-list img {
-            max-width: 100px;
+            max-width: 60px;
             height: auto;
-            margin-top: 10px;
-            border-radius: 5px;
+            margin-top: 5px;
+            border-radius: 3px;
             display: block;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .item-list button {
             margin-right: 10px;
-            background-color: #ff6347;
-            color: #222;
-            border: none;
+            background-color: #7D7D7D;
+            color: #FFF;
+            border: 1px solid #000;
             cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
             transition: background-color 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
         }
 
         .item-list button:hover {
-            background-color: #e5533d;
+            background-color: #555;
         }
 
         .back-button {
-            margin-top: 40px;
-            padding: 15px;
-            background-color: #6c757d;
-            color: #fff;
-            border: none;
+            margin-top: 20px;
+            padding: 8px;
+            background-color: #7D7D7D;
+            color: #FFF;
+            border: 1px solid #000;
             cursor: pointer;
-            font-size: 1.2em;
-            width: 50%;
+            font-size: 1em;
+            width: 80%;
             box-sizing: border-box;
-            border-radius: 8px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
         }
 
         .back-button:hover {
             background-color: #555;
-            transform: translateY(-3px);
         }
 
         .edit-form {
             display: none;
             margin-top: 20px;
-            padding: 15px;
-            background-color: #444;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            background-color: #D4D4D4;
+            border-radius: 4px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
             width: 100%;
             box-sizing: border-box;
-            border-left: 5px solid #ff6347;
+            border: 1px solid #7D7D7D;
         }
 
         .sort-filter-container {
@@ -123,79 +145,87 @@
         }
 
         .sort-filter-container select {
-            padding: 10px;
+            padding: 8px;
             font-size: 1em;
-            background-color: #444;
-            color: #eee;
-            border: 2px solid #555;
-            border-radius: 6px;
-            margin-right: 10px;
+            background-color: #f0f0f0;
+            color: #000;
+            border: 1px solid #999;
+            border-radius: 5px;
         }
 
         .sort-filter-container button {
-            background-color: #ff6347;
-            color: #222;
-            border: none;
+            background-color: #7D7D7D;
+            color: #FFF;
+            border: 1px solid #000;
             cursor: pointer;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 8px 15px;
+            border-radius: 4px;
             transition: background-color 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
         }
 
         .sort-filter-container button:hover {
-            background-color: #e5533d;
+            background-color: #555;
         }
 
         .sort-title {
             width: 100%;
             padding: 10px;
-            background-color: #555;
-            color: #eee;
-            font-size: 1.5em;
+            background-color: #7D7D7D;
+            color: #FFF;
+            font-size: 1.2em;
             text-align: center;
-            border-radius: 6px;
+            border-radius: 4px;
             margin-bottom: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+            border: 1px solid #000;
         }
     </style>
 </head>
 
 <body>
-    <h1 onclick="goHome()">재고 목록</h1>
-
-    <div class="container">
-        <!-- 정렬 제목 -->
-        <div class="sort-title">등록 일자 기준 정렬</div>
-        
-        <!-- 정렬 및 필터링 옵션 -->
-        <div class="sort-filter-container">
-            <label for="sortOrder">정렬 순서:</label>
-            <select id="sortOrder">
-                <option value="recent">최근 등록순</option>
-                <option value="oldest">오래된 등록순</option>
-            </select>
-            <button onclick="sortItems()">정렬</button>
+    <div class="window">
+        <div class="window-header">
+            Inventory Control System
         </div>
-        
-        <div id="itemList" class="item-list"></div>
 
-        <div class="edit-form" id="editForm">
-            <h2>아이템 수정</h2>
-            <input type="hidden" id="editIndex">
-            <input type="text" id="editCode" placeholder="*아이템 코드*" required>
-            <input type="text" id="editName" placeholder="*아이템 이름*" required>
-            <input type="text" id="editLocation" placeholder="*위치*" required>
-            <input type="text" id="editMemo" placeholder="메모">
-            <input type="text" id="editColor" placeholder="색상">
-            <input type="file" id="editImage" accept="image/*" capture="camera">
-            <button onclick="saveItem()">저장</button>
-            <button onclick="cancelEdit()">취소</button>
-        </div>
-        <button class="back-button" onclick="goBack()">뒤로 가기</button>
+        <h1 onclick="goHome()">Inventory List</h1>
 
-        <!-- 개발자 이름 추가 -->
-        <div style="text-align: center; margin-top: 20px; color: #bbb;">
-            <p>개발자: 지중해</p>
+        <div class="container">
+            <!-- Sort Title -->
+            <div class="sort-title">Sort by Registration Date</div>
+            
+            <!-- Sort and Filter Options -->
+            <div class="sort-filter-container">
+                <label for="sortOrder">Sort Order:</label>
+                <select id="sortOrder">
+                    <option value="recent">Most Recent</option>
+                    <option value="oldest">Oldest First</option>
+                </select>
+                <button onclick="sortItems()">Sort</button>
+            </div>
+            
+            <div id="itemList" class="item-list"></div>
+
+            <div class="edit-form" id="editForm">
+                <h2>Edit Item</h2>
+                <input type="hidden" id="editIndex">
+                <input type="text" id="editCode" placeholder="*Item Code*" required>
+                <input type="text" id="editName" placeholder="*Item Name*" required>
+                <input type="text" id="editLocation" placeholder="*Location*" required>
+                <input type="text" id="editMemo" placeholder="Memo">
+                <input type="text" id="editColor" placeholder="Color">
+                <input type="file" id="editImage" accept="image/*" capture="camera">
+                <button onclick="saveItem()">Save</button>
+                <button onclick="cancelEdit()">Cancel</button>
+            </div>
+            <button class="back-button" onclick="goBack()">Go Back</button>
+
+            <!-- Developer Name -->
+            <div style="text-align: center; margin-top: 20px; color: #000;">
+                <p>Developed by 지중해</p>
+            </div>
         </div>
     </div>
 
@@ -211,35 +241,35 @@
 
         function displayItems() {
             const itemListDiv = document.getElementById('itemList');
-            itemListDiv.innerHTML = ''; // 기존 내용을 초기화
+            itemListDiv.innerHTML = ''; // Clear existing content
 
             if (items.length > 0) {
                 items.forEach((item, index) => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
-                        <p><strong>아이템 코드:</strong> ${item.code}</p>
-                        <p><strong>아이템 이름:</strong> ${item.name}</p>
-                        <p><strong>위치:</strong> ${item.location}</p>
-                        <p><strong>메모:</strong> ${item.memo}</p>
-                        <p><strong>색상:</strong> ${item.color}</p>
+                        <p><strong>Item Code:</strong> ${item.code}</p>
+                        <p><strong>Item Name:</strong> ${item.name}</p>
+                        <p><strong>Location:</strong> ${item.location}</p>
+                        <p><strong>Memo:</strong> ${item.memo}</p>
+                        <p><strong>Color:</strong> ${item.color}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
-                        <button onclick="editItem(${index})">수정</button>
-                        <button onclick="deleteItem(${index})">삭제</button>
+                        <button onclick="editItem(${index})">Edit</button>
+                        <button onclick="deleteItem(${index})">Delete</button>
                         <hr>
                     `;
                     itemListDiv.appendChild(itemDiv);
                 });
             } else {
-                itemListDiv.innerHTML = `<p>아이템이 없습니다.</p>`;
+                itemListDiv.innerHTML = `<p>No items available.</p>`;
             }
         }
 
         function goBack() {
-            window.location.href = 'index.html'; // 홈 페이지로 이동
+            window.location.href = 'index.html'; // Redirect to the home page
         }
 
         function goHome() {
-            window.location.href = 'index.html'; // 타이틀 클릭 시 홈 페이지로 이동
+            window.location.href = 'index.html'; // Redirect to the home page
         }
 
         function editItem(index) {
@@ -250,9 +280,9 @@
             document.getElementById('editLocation').value = item.location;
             document.getElementById('editMemo').value = item.memo;
             document.getElementById('editColor').value = item.color;
-            document.getElementById('editImage').value = '';  // 이미지 입력 초기화
+            document.getElementById('editImage').value = '';  // Clear image input
             document.getElementById('editForm').style.display = 'block';
-            window.scrollTo(0, document.getElementById('editForm').offsetTop);  // 수정 폼으로 스크롤 이동
+            window.scrollTo(0, document.getElementById('editForm').offsetTop);  // Scroll to edit form
         }
 
         function saveItem() {
@@ -268,19 +298,17 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     items[index].image = e.target.result;
-                    items[index].date = new Date().toISOString();
                     saveItemsToLocalStorage();
-                    alert('아이템이 성공적으로 업데이트되었습니다.');
+                    alert('Item updated successfully.');
                     cancelEdit();
-                    displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
+                    displayItems();  // Refresh the list without reloading
                 };
                 reader.readAsDataURL(editImageFile);
             } else {
-                items[index].date = new Date().toISOString();
                 saveItemsToLocalStorage();
-                alert('아이템이 성공적으로 업데이트되었습니다.');
+                alert('Item updated successfully.');
                 cancelEdit();
-                displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
+                displayItems();  // Refresh the list without reloading
             }
         }
 
@@ -291,8 +319,8 @@
         function deleteItem(index) {
             items.splice(index, 1);
             saveItemsToLocalStorage();
-            alert('아이템이 삭제되었습니다.');
-            displayItems();  // 새로고침 없이 삭제된 결과를 즉시 표시
+            alert('Item deleted successfully.');
+            displayItems();  // Refresh the list without reloading
         }
 
         function cancelEdit() {
@@ -300,15 +328,15 @@
         }
 
         function sortItems() {
-            const order = document.getElementById('sortOrder').value;
-
+            const sortOrder = document.getElementById('sortOrder').value;
             items.sort((a, b) => {
-                let comparison = new Date(a.date) - new Date(b.date);
-
-                return order === 'recent' ? -comparison : comparison;
+                if (sortOrder === 'recent') {
+                    return new Date(b.date) - new Date(a.date);
+                } else {
+                    return new Date(a.date) - new Date(b.date);
+                }
             });
-
-            displayItems();  // 정렬 후 목록을 다시 표시
+            displayItems();
         }
 
         window.onload = function() {
