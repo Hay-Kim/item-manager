@@ -39,6 +39,7 @@
             font-size: 1.2em;
             text-align: center;
             border-bottom: 2px solid #000;
+            cursor: pointer;
         }
 
         h1 {
@@ -48,7 +49,6 @@
             font-size: 1.5em;
             text-transform: uppercase;
             font-weight: bold;
-            cursor: pointer;
         }
 
         .container {
@@ -207,6 +207,18 @@
         button:hover {
             background-color: #555;
         }
+
+        .edit-form {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #D4D4D4;
+            border-radius: 4px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #7D7D7D;
+        }
     </style>
 </head>
 
@@ -247,6 +259,20 @@
             </div>
 
             <button class="inventory-button" onclick="goToInventory()">Check Inventory</button>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="edit-form" id="editForm">
+            <h2>Edit Item</h2>
+            <input type="hidden" id="editIndex">
+            <input type="text" id="editCode" placeholder="Item Code" required>
+            <input type="text" id="editName" placeholder="Item Name" required>
+            <input type="text" id="editLocation" placeholder="Location" required>
+            <input type="text" id="editMemo" placeholder="Memo">
+            <input type="text" id="editColor" placeholder="Color">
+            <input type="file" id="editImage" accept="image/*" capture="camera">
+            <button onclick="saveItem()">Save</button>
+            <button onclick="cancelEdit()">Cancel</button>
         </div>
     </div>
 
@@ -327,8 +353,9 @@
         }
 
         function editItem(index, source) {
-            const item = items[index];
-            document.getElementById('editIndex').value = index;
+            const filteredItems = (source === 'search') ? filterItemsForSearch() : items.slice(-5).reverse();
+            const item = filteredItems[index];
+            document.getElementById('editIndex').value = items.indexOf(item);
             document.getElementById('editCode').value = item.code;
             document.getElementById('editName').value = item.name;
             document.getElementById('editLocation').value = item.location;
@@ -369,23 +396,28 @@
         }
 
         function deleteItem(index, source) {
-            items.splice(index, 1);
+            const filteredItems = (source === 'search') ? filterItemsForSearch() : items.slice(-5).reverse();
+            const itemIndex = items.indexOf(filteredItems[index]);
+            items.splice(itemIndex, 1);
             saveItemsToLocalStorage();
             alert('Item deleted successfully.');
-            if (source === 'search') {
-                searchItems();  // Refresh search results
-            } else if (source === 'recent') {
-                displayRecentItems();  // Refresh recent items
-            }
+            searchItems();  // Refresh search results
+            displayRecentItems();  // Refresh recent items
         }
 
-        function clearAddItemForm() {
-            document.getElementById('newCode').value = '';
-            document.getElementById('newName').value = '';
-            document.getElementById('newLocation').value = '';
-            document.getElementById('newMemo').value = '';
-            document.getElementById('newColor').value = '';
-            document.getElementById('newImage').value = '';
+        function cancelEdit() {
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        function filterItemsForSearch() {
+            const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
+            return items.filter(item =>
+                item.code.toLowerCase().includes(searchTerm) ||
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.location.toLowerCase().includes(searchTerm) ||
+                item.memo.toLowerCase().includes(searchTerm) ||
+                item.color.toLowerCase().includes(searchTerm)
+            );
         }
 
         function addItem() {
@@ -428,6 +460,15 @@
             } else {
                 alert('Please enter item code, name, and location.');
             }
+        }
+
+        function clearAddItemForm() {
+            document.getElementById('newCode').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newLocation').value = '';
+            document.getElementById('newMemo').value = '';
+            document.getElementById('newColor').value = '';
+            document.getElementById('newImage').value = '';
         }
 
         function goToInventory() {
