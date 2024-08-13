@@ -58,6 +58,8 @@
             background-color: #f9f9f9;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .no-result {
@@ -142,6 +144,9 @@
             } else {
                 resultDiv.innerHTML = `<p class="no-result">해당 조건에 맞는 아이템을 찾을 수 없습니다.</p>`;
             }
+
+            // 검색 결과 표시 후 스크롤 위치 유지
+            document.getElementById('searchTerm').scrollIntoView({ behavior: 'smooth' });
         }
 
         function addItem() {
