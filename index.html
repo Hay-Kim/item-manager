@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>재고 관리 시스템</title>
+    <title>Inventory Management System</title>
     <style>
         body {
-            font-family: 'Courier New', monospace;
-            background-color: #222;
-            color: #eee;
+            font-family: 'Monaco', 'Menlo', monospace;
+            background-color: #f0f0f0;
+            color: #333;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -17,32 +17,34 @@
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
-            text-shadow: 2px 2px #000;
+            text-shadow: 1px 1px #ccc;
         }
 
         h1 {
-            color: #ff6347;
+            color: #2c3e50;
             text-align: center;
             margin-bottom: 40px;
-            font-size: 2.5em;
+            font-size: 3em;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px #ecf0f1;
         }
 
         .container {
-            width: 80%;
-            max-width: 700px;
-            padding: 25px;
-            background-color: #333;
+            width: 70%;
+            max-width: 900px;
+            padding: 20px;
+            background-color: #ecf0f1;
             border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border-left: 8px solid #ff6347;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid #bdc3c7;
             text-align: center;
         }
 
         .action-container {
             display: flex;
             justify-content: space-between;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         .action-container > div {
@@ -51,50 +53,54 @@
         }
 
         input[type="text"], input[type="file"], button {
-            padding: 15px;
+            padding: 12px;
             font-size: 1.1em;
-            margin: 12px 0;
-            width: calc(100% - 30px);
+            margin: 10px 0;
+            width: calc(100% - 24px);
             box-sizing: border-box;
-            border: 2px solid #555;
-            border-radius: 6px;
-            background-color: #444;
-            color: #eee;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #2c3e50;
             transition: background-color 0.3s ease, border-color 0.3s ease;
+            font-family: 'Menlo', 'Monaco', monospace;
         }
 
         input[type="text"]:focus, input[type="file"]:focus {
-            background-color: #555;
-            border-color: #ff6347;
+            background-color: #e1e1e1;
+            border-color: #3498db;
         }
 
         button {
-            background-color: #ff6347;
-            color: #222;
+            background-color: #3498db;
+            color: #ecf0f1;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            text-transform: uppercase;
         }
 
         button:hover {
-            background-color: #e5533d;
+            background-color: #2980b9;
             transform: translateY(-2px);
         }
 
         .recent-items {
-            margin-top: 25px;
+            margin-top: 20px;
             padding: 15px;
-            background-color: #444;
+            background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             box-sizing: border-box;
-            border-left: 5px solid #ff6347;
+            border-left: 4px solid #3498db;
             text-align: left;
         }
 
         .recent-items p {
             margin: 10px 0;
+            font-family: 'Menlo', 'Monaco', monospace;
+            color: #2c3e50;
         }
 
         .recent-items img {
@@ -106,51 +112,52 @@
         }
 
         .inventory-button {
-            margin-top: 40px;
+            margin-top: 30px;
             padding: 15px;
-            background-color: #6c757d;
+            background-color: #e67e22;
             color: #fff;
             border: none;
             cursor: pointer;
             font-size: 1.2em;
-            width: 50%;
+            width: 60%;
             box-sizing: border-box;
             border-radius: 8px;
             transition: background-color 0.3s ease, transform 0.3s ease;
             text-align: center;
+            font-family: 'Menlo', 'Monaco', monospace;
         }
 
         .inventory-button:hover {
-            background-color: #555;
+            background-color: #d35400;
             transform: translateY(-3px);
         }
     </style>
 </head>
 
 <body>
-    <h1>재고 관리 시스템</h1>
+    <h1>Inventory System</h1>
 
     <div class="container">
         <div class="action-container">
             <div>
-                <h2>아이템 추가</h2>
-                <input type="text" id="newCode" placeholder="아이템 코드">
-                <input type="text" id="newName" placeholder="아이템 이름">
-                <input type="text" id="newLocation" placeholder="위치">
-                <input type="text" id="newMemo" placeholder="메모">
-                <input type="text" id="newColor" placeholder="색상">
+                <h2>Add New Item</h2>
+                <input type="text" id="newCode" placeholder="Item Code">
+                <input type="text" id="newName" placeholder="Item Name">
+                <input type="text" id="newLocation" placeholder="Location">
+                <input type="text" id="newMemo" placeholder="Memo">
+                <input type="text" id="newColor" placeholder="Color">
                 <input type="file" id="newImage" accept="image/*" capture="camera">
-                <button onclick="addItem()">추가</button>
+                <button onclick="addItem()">Add</button>
             </div>
             <div>
-                <h2>최근 등록된 아이템</h2>
+                <h2>Recent Items</h2>
                 <div class="recent-items" id="recentItems">
-                    <!-- 최근 등록된 아이템 목록이 여기에 표시됩니다. -->
+                    <!-- Recent items will be displayed here -->
                 </div>
             </div>
         </div>
 
-        <button class="inventory-button" onclick="goToInventory()">재고 목록 보기</button>
+        <button class="inventory-button" onclick="goToInventory()">View Inventory</button>
     </div>
 
     <script>
@@ -169,23 +176,23 @@
 
         function displayRecentItems() {
             const recentItemsDiv = document.getElementById('recentItems');
-            recentItemsDiv.innerHTML = ''; // 기존 내용을 초기화
+            recentItemsDiv.innerHTML = ''; // Reset content
 
             if (items.length > 0) {
-                const recentItems = items.slice(-5).reverse(); // 최근 5개의 아이템만 표시
+                const recentItems = items.slice(-5).reverse(); // Show last 5 items
                 recentItems.forEach(item => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
-                        <p><strong>아이템 코드:</strong> ${item.code}</p>
-                        <p><strong>아이템 이름:</strong> ${item.name}</p>
-                        <p><strong>위치:</strong> ${item.location}</p>
+                        <p><strong>Code:</strong> ${item.code}</p>
+                        <p><strong>Name:</strong> ${item.name}</p>
+                        <p><strong>Location:</strong> ${item.location}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
                         <hr>
                     `;
                     recentItemsDiv.appendChild(itemDiv);
                 });
             } else {
-                recentItemsDiv.innerHTML = '<p>아이템이 없습니다.</p>';
+                recentItemsDiv.innerHTML = '<p>No items available.</p>';
             }
         }
 
@@ -214,20 +221,20 @@
                         newItem.image = e.target.result;
                         items.push(newItem);
                         saveItemsToLocalStorage();
-                        alert('아이템이 추가되었습니다.');
+                        alert('Item added.');
                         clearAddItemForm();
-                        displayRecentItems();  // 새로고침 없이 추가된 아이템을 즉시 표시
+                        displayRecentItems();  // Display without refresh
                     };
                     reader.readAsDataURL(newImageFile);
                 } else {
                     items.push(newItem);
                     saveItemsToLocalStorage();
-                    alert('아이템이 추가되었습니다.');
+                    alert('Item added.');
                     clearAddItemForm();
-                    displayRecentItems();  // 새로고침 없이 추가된 아이템을 즉시 표시
+                    displayRecentItems();  // Display without refresh
                 }
             } else {
-                alert('아이템 코드, 이름 및 위치를 입력해주세요.');
+                alert('Please enter item code, name, and location.');
             }
         }
 
@@ -241,7 +248,7 @@
         }
 
         function goToInventory() {
-            window.location.href = 'inventory.html'; // 재고 목록 페이지로 이동
+            window.location.href = 'inventory.html'; // Go to inventory page
         }
 
         window.onload = function() {
