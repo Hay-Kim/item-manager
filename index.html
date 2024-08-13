@@ -15,7 +15,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             min-height: 100vh;
             text-shadow: 2px 2px #000;
         }
@@ -23,7 +23,7 @@
         h1 {
             color: #ff6347;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             font-size: 2.5em;
             text-transform: uppercase;
         }
@@ -31,12 +31,12 @@
         .container {
             width: 80%;
             max-width: 700px;
-            margin-top: 30px;
             padding: 25px;
             background-color: #333;
             border-radius: 12px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             border-left: 8px solid #ff6347;
+            text-align: center;
         }
 
         .recent-items {
@@ -48,6 +48,7 @@
             width: 100%;
             box-sizing: border-box;
             border-left: 5px solid #ff6347;
+            text-align: left;
         }
 
         .recent-items p {
@@ -60,21 +61,6 @@
             margin-top: 10px;
             border-radius: 5px;
             display: block;
-        }
-
-        .recent-items button {
-            margin-right: 10px;
-            background-color: #ff6347;
-            color: #222;
-            border: none;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .recent-items button:hover {
-            background-color: #e5533d;
         }
 
         .inventory-button {
@@ -94,4 +80,64 @@
 
         .inventory-button:hover {
             background-color: #555;
-            transform
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>재고 관리 시스템</h1>
+
+    <div class="container">
+        <button class="inventory-button" onclick="goToInventory()">재고 목록 보기</button>
+
+        <div class="recent-items" id="recentItems">
+            <h2>최근 등록된 아이템</h2>
+            <!-- 최근 등록된 아이템 목록이 여기에 표시됩니다. -->
+        </div>
+    </div>
+
+    <script>
+        let items = [];
+
+        function loadItemsFromLocalStorage() {
+            const savedItems = localStorage.getItem('items');
+            if (savedItems) {
+                items = JSON.parse(savedItems);
+            }
+        }
+
+        function displayRecentItems() {
+            const recentItemsDiv = document.getElementById('recentItems');
+            recentItemsDiv.innerHTML = '<h2>최근 등록된 아이템</h2>'; // 초기화 후 제목 다시 추가
+
+            if (items.length > 0) {
+                const recentItems = items.slice(-5).reverse(); // 최근 5개의 아이템만 표시
+                recentItems.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.innerHTML = `
+                        <p><strong>아이템 코드:</strong> ${item.code}</p>
+                        <p><strong>아이템 이름:</strong> ${item.name}</p>
+                        <p><strong>위치:</strong> ${item.location}</p>
+                        ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
+                        <hr>
+                    `;
+                    recentItemsDiv.appendChild(itemDiv);
+                });
+            } else {
+                recentItemsDiv.innerHTML += '<p>아이템이 없습니다.</p>';
+            }
+        }
+
+        function goToInventory() {
+            window.location.href = 'inventory.html'; // 재고 목록 페이지로 이동
+        }
+
+        window.onload = function() {
+            loadItemsFromLocalStorage();
+            displayRecentItems();
+        }
+    </script>
+</body>
+
+</html>
