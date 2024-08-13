@@ -48,6 +48,7 @@
             font-size: 1.5em;
             text-transform: uppercase;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .container {
@@ -58,6 +59,87 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
             text-align: center;
             margin-top: 10px;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .search-container input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            width: calc(100% - 22px);
+            box-sizing: border-box;
+            border: 2px solid #555;
+            border-radius: 6px;
+            background-color: #FFF;
+            color: #000;
+        }
+
+        .search-container button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            font-size: 1em;
+            background-color: #7D7D7D;
+            color: #FFF;
+            border: 1px solid #000;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-container button:hover {
+            background-color: #555;
+        }
+
+        .result-items {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #D4D4D4;
+            border-radius: 4px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #7D7D7D;
+            text-align: left;
+        }
+
+        .result-items p {
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+        }
+
+        .result-items img {
+            max-width: 60px;
+            height: auto;
+            margin-top: 5px;
+            border-radius: 3px;
+            display: block;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .inventory-button {
+            margin-top: 20px;
+            padding: 8px;
+            background-color: #7D7D7D;
+            color: #FFF;
+            border: 1px solid #000;
+            cursor: pointer;
+            font-size: 1em;
+            width: 80%;
+            box-sizing: border-box;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .inventory-button:hover {
+            background-color: #555;
         }
 
         .action-container {
@@ -135,26 +217,6 @@
             display: block;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
-
-        .inventory-button {
-            margin-top: 20px;
-            padding: 8px;
-            background-color: #7D7D7D;
-            color: #FFF;
-            border: 1px solid #000;
-            cursor: pointer;
-            font-size: 1em;
-            width: 80%;
-            box-sizing: border-box;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-            text-align: center;
-            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-        }
-
-        .inventory-button:hover {
-            background-color: #555;
-        }
     </style>
 </head>
 
@@ -164,9 +226,17 @@
             Inventory Control System
         </div>
 
-        <h1>Item Management</h1>
+        <h1 onclick="refreshPage()">Item Management</h1>
 
         <div class="container">
+            <!-- Search Container -->
+            <div class="search-container">
+                <input type="text" id="searchTerm" placeholder="Search..." onkeydown="handleKeyDown(event)">
+                <button onclick="searchItems()">Search</button>
+            </div>
+            
+            <div id="resultItems" class="result-items"></div>
+
             <div class="action-container">
                 <div>
                     <h2>Add Item</h2>
@@ -201,6 +271,42 @@
             const savedItems = localStorage.getItem('items');
             if (savedItems) {
                 items = JSON.parse(savedItems);
+            }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === "Enter" || event.keyCode === 13) {
+                searchItems();
+            }
+        }
+
+        function searchItems() {
+            const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
+            const resultDiv = document.getElementById('resultItems');
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            const filteredItems = items.filter(item => 
+                item.code.toLowerCase().includes(searchTerm) || 
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.location.toLowerCase().includes(searchTerm) ||
+                item.memo.toLowerCase().includes(searchTerm) ||
+                item.color.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredItems.length > 0) {
+                filteredItems.forEach((item, index) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.innerHTML = `
+                        <p><strong>Item Code:</strong> ${item.code}</p>
+                        <p><strong>Item Name:</strong> ${item.name}</p>
+                        <p><strong>Location:</strong> ${item.location}</p>
+                        ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
+                        <hr>
+                    `;
+                    resultDiv.appendChild(itemDiv);
+                });
+            } else {
+                resultDiv.innerHTML = `<p>No items found matching "${searchTerm}".</p>`;
             }
         }
 
@@ -279,6 +385,10 @@
 
         function goToInventory() {
             window.location.href = 'inventory.html'; // Redirect to the inventory page
+        }
+
+        function refreshPage() {
+            window.location.reload(); // Refresh the current page
         }
 
         window.onload = function() {
