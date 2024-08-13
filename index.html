@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Manager</title>
     <style>
-        /* 기본 스타일 */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Courier New', monospace;
+            background-color: #222;
+            color: #eee;
             margin: 0;
             padding: 0;
             display: flex;
@@ -17,88 +17,122 @@
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
+            text-shadow: 2px 2px #000;
         }
 
         h1 {
-            color: #333;
+            color: #ff6347;
             text-align: center;
             margin-bottom: 10px;
+            font-size: 2.5em;
+            text-transform: uppercase;
         }
 
         .logo {
-            width: 100px;
-            margin-top: 20px;
+            width: 120px;
+            margin-top: 30px;
             cursor: pointer;
+            filter: drop-shadow(0 0 5px #ff6347);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: rotate(-10deg) scale(1.1);
         }
 
         .container {
-            width: 90%;
-            max-width: 600px;
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 700px;
+            margin-top: 40px;
+            padding: 25px;
+            background-color: #333;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-left: 8px solid #ff6347;
         }
 
         input[type="text"], button {
-            padding: 12px;
-            font-size: 16px;
-            margin: 10px 0;
-            width: calc(100% - 24px);
+            padding: 15px;
+            font-size: 1.1em;
+            margin: 12px 0;
+            width: calc(100% - 30px);
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 2px solid #555;
+            border-radius: 6px;
+            background-color: #444;
+            color: #eee;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            background-color: #555;
+            border-color: #ff6347;
         }
 
         button {
-            background-color: #007BFF;
-            color: white;
+            background-color: #ff6347;
+            color: #222;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #e5533d;
+            transform: translateY(-2px);
         }
 
         .result {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #444;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             width: 100%;
             box-sizing: border-box;
+            border-left: 5px solid #ff6347;
         }
 
         .no-result {
-            color: red;
+            color: #ff6347;
         }
 
         .inventory-button {
-            margin-top: 50px;
-            padding: 12px;
+            margin-top: 60px;
+            padding: 15px;
             background-color: #6c757d;
-            color: white;
+            color: #fff;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            width: 60%;
+            font-size: 1.2em;
+            width: 50%;
             box-sizing: border-box;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .inventory-button:hover {
-            background-color: #5a6268;
+            background-color: #555;
+            transform: translateY(-3px);
         }
 
         .action-container {
-            margin-top: 20px;
+            margin-top: 25px;
             display: flex;
             justify-content: space-between;
+            gap: 20px;
+        }
+
+        .action-container > div {
+            flex: 1;
+        }
+
+        .action-container h2 {
+            font-size: 1.5em;
+            color: #ff6347;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #ff6347;
+            padding-bottom: 5px;
         }
     </style>
 </head>
@@ -106,33 +140,33 @@
 <body>
     <img src="https://pngimg.com/uploads/box/box_PNG5.png" alt="홈 로고" class="logo" onclick="refreshPage()">
 
-    <h1>물건 위치 검색 및 관리</h1>
+    <h1>Item Freak</h1>
 
     <div class="container">
-        <h2>검색</h2>
-        <input type="text" id="searchTerm" placeholder="검색어를 입력하세요" onkeydown="handleKeyDown(event)">
-        <button onclick="searchItem()">검색</button>
+        <h2>Search</h2>
+        <input type="text" id="searchTerm" placeholder="Enter search term" onkeydown="handleKeyDown(event)">
+        <button onclick="searchItem()">Search</button>
         <div class="result" id="result"></div>
     </div>
 
     <div class="container action-container">
         <div>
-            <h2>새 아이템 추가</h2>
-            <input type="text" id="newCode" placeholder="아이템 코드">
-            <input type="text" id="newName" placeholder="아이템 이름">
-            <input type="text" id="newLocation" placeholder="위치">
-            <input type="text" id="newMemo" placeholder="메모">
-            <input type="text" id="newColor" placeholder="색상">
-            <button onclick="addItem()">아이템 추가</button>
+            <h2>Add Item</h2>
+            <input type="text" id="newCode" placeholder="Item Code">
+            <input type="text" id="newName" placeholder="Item Name">
+            <input type="text" id="newLocation" placeholder="Location">
+            <input type="text" id="newMemo" placeholder="Memo">
+            <input type="text" id="newColor" placeholder="Color">
+            <button onclick="addItem()">Add</button>
         </div>
         <div>
-            <h2>아이템 삭제</h2>
-            <input type="text" id="deleteCode" placeholder="삭제할 아이템 코드">
-            <button onclick="deleteItem()">아이템 삭제</button>
+            <h2>Delete Item</h2>
+            <input type="text" id="deleteCode" placeholder="Item Code to Delete">
+            <button onclick="deleteItem()">Delete</button>
         </div>
     </div>
 
-    <button class="inventory-button" onclick="goToInventory()">재고 확인</button>
+    <button class="inventory-button" onclick="goToInventory()">Check Inventory</button>
 
     <script>
         let items = [];
@@ -181,17 +215,17 @@
                 results.forEach(item => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
-                        <p><strong>아이템 코드:</strong> ${item.code}</p>
-                        <p><strong>아이템 이름:</strong> ${item.name}</p>
-                        <p><strong>위치:</strong> ${item.location}</p>
-                        <p><strong>메모:</strong> ${item.memo}</p>
-                        <p><strong>색상:</strong> ${item.color}</p>
+                        <p><strong>Item Code:</strong> ${item.code}</p>
+                        <p><strong>Item Name:</strong> ${item.name}</p>
+                        <p><strong>Location:</strong> ${item.location}</p>
+                        <p><strong>Memo:</strong> ${item.memo}</p>
+                        <p><strong>Color:</strong> ${item.color}</p>
                         <hr>
                     `;
                     resultDiv.appendChild(itemDiv);
                 });
             } else {
-                resultDiv.innerHTML = `<p class="no-result">해당 조건에 맞는 아이템을 찾을 수 없습니다.</p>`;
+                resultDiv.innerHTML = `<p class="no-result">No items found matching the criteria.</p>`;
             }
 
             // 검색 후 화면을 맨 위로 스크롤
@@ -214,10 +248,10 @@
                     color: newColor
                 });
                 saveItemsToLocalStorage();
-                alert('아이템이 추가되었습니다.');
+                alert('Item added successfully.');
                 clearAddItemForm();
             } else {
-                alert('아이템 코드, 이름 및 위치를 입력해주세요.');
+                alert('Please enter item code, name, and location.');
             }
         }
 
@@ -235,9 +269,9 @@
             if (deleteCode) {
                 items = items.filter(item => item.code !== deleteCode);
                 saveItemsToLocalStorage();
-                alert('아이템이 삭제되었습니다.');
+                alert('Item deleted successfully.');
             } else {
-                alert('삭제할 아이템 코드를 입력해주세요.');
+                alert('Please enter the item code to delete.');
             }
         }
     </script>
