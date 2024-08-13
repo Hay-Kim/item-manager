@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
@@ -217,44 +217,6 @@
             display: block;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
-
-        /* 삭제 확인 팝업 스타일 */
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            padding: 20px;
-            background-color: #FFF;
-            border: 2px solid #000;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            text-align: center;
-            display: none;
-        }
-
-        .popup button {
-            width: 80px;
-            margin: 10px;
-        }
-
-        .popup-message {
-            margin-bottom: 20px;
-            font-size: 1em;
-        }
-
-        .edit-form {
-            display: none;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #D4D4D4;
-            border-radius: 4px;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #7D7D7D;
-        }
     </style>
 </head>
 
@@ -264,7 +226,7 @@
             Inventory Control System
         </div>
 
-        <h1 onclick="refreshPage()">Item Management</h1>
+        <h1>Item Management</h1>
 
         <div class="container">
             <!-- Search Container -->
@@ -320,7 +282,6 @@
 
     <script>
         let items = [];
-        let deleteIndex = -1;
 
         function saveItemsToLocalStorage() {
             localStorage.setItem('items', JSON.stringify(items));
@@ -359,9 +320,11 @@
                         <p><strong>Item Code:</strong> ${item.code}</p>
                         <p><strong>Item Name:</strong> ${item.name}</p>
                         <p><strong>Location:</strong> ${item.location}</p>
+                        <p><strong>Memo:</strong> ${item.memo}</p>
+                        <p><strong>Color:</strong> ${item.color}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
                         <button onclick="editItem(${index})">Edit</button>
-                        <button onclick="showDeletePopup(${index})">Delete</button>
+                        <button onclick="promptDelete(${index})">Delete</button>
                         <hr>
                     `;
                     resultDiv.appendChild(itemDiv);
@@ -383,9 +346,11 @@
                         <p><strong>Item Code:</strong> ${item.code}</p>
                         <p><strong>Item Name:</strong> ${item.name}</p>
                         <p><strong>Location:</strong> ${item.location}</p>
+                        <p><strong>Memo:</strong> ${item.memo}</p>
+                        <p><strong>Color:</strong> ${item.color}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
                         <button onclick="editItem(${index})">Edit</button>
-                        <button onclick="showDeletePopup(${index})">Delete</button>
+                        <button onclick="promptDelete(${index})">Delete</button>
                         <hr>
                     `;
                     recentItemsDiv.appendChild(itemDiv);
@@ -437,50 +402,6 @@
             }
         }
 
-        function clearAddItemForm() {
-            document.getElementById('newCode').value = '';
-            document.getElementById('newName').value = '';
-            document.getElementById('newLocation').value = '';
-            document.getElementById('newMemo').value = '';
-            document.getElementById('newColor').value = '';
-            document.getElementById('newImage').value = '';
-        }
-
-        function goToInventory() {
-            window.location.href = 'inventory.html'; // Redirect to the inventory page
-        }
-
-        function refreshPage() {
-            window.location.reload(); // Refresh the current page
-        }
-
-        function goHome() {
-            window.location.href = 'index.html'; // Redirect to the home page
-        }
-
-        function showDeletePopup(index) {
-            deleteIndex = index;
-            document.getElementById('deletePopup').style.display = 'block';
-        }
-
-        function confirmDelete() {
-            deleteItem(deleteIndex);
-            document.getElementById('deletePopup').style.display = 'none';
-            searchItems();  // Refresh search results if an item was deleted from search
-            displayRecentItems();  // Refresh recent items if an item was deleted
-        }
-
-        function cancelDelete() {
-            deleteIndex = -1;
-            document.getElementById('deletePopup').style.display = 'none';
-        }
-
-        function deleteItem(index) {
-            items.splice(index, 1);
-            saveItemsToLocalStorage();
-            alert('Item deleted successfully.');
-        }
-
         function editItem(index) {
             const item = items[index];
             document.getElementById('editIndex').value = index;
@@ -525,6 +446,25 @@
 
         function cancelEdit() {
             document.getElementById('editForm').style.display = 'none';
+        }
+
+        function promptDelete(index) {
+            const confirmed = confirm("Are you sure you want to delete this item?");
+            if (confirmed) {
+                deleteItem(index);
+            }
+        }
+
+        function deleteItem(index) {
+            items.splice(index, 1);
+            saveItemsToLocalStorage();
+            alert('Item deleted successfully.');
+            searchItems();  // Refresh search results if the item was deleted
+            displayRecentItems();  // Refresh recent items if the item was deleted
+        }
+
+        function goHome() {
+            window.location.href = 'index.html'; // Redirect to the home page
         }
 
         window.onload = function() {
