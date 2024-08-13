@@ -15,8 +15,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start;
+            min-height: 100vh;
         }
 
         h1, h2 {
@@ -27,12 +27,16 @@
             width: 100%;
             max-width: 600px;
             margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         input[type="text"], button {
             padding: 10px;
             font-size: 16px;
-            margin: 5px 0;
+            margin: 10px 0;
             width: calc(100% - 20px);
             box-sizing: border-box;
         }
@@ -51,7 +55,7 @@
         .result {
             margin-top: 20px;
             padding: 10px;
-            background-color: #fff;
+            background-color: #f9f9f9;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
@@ -115,12 +119,12 @@
         function searchItem() {
             const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
             const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // 검색 결과 초기화
+
             const results = items.filter(item => 
                 item.code.toLowerCase().includes(searchTerm) || 
                 item.name.toLowerCase().includes(searchTerm)
             );
-            
-            resultDiv.innerHTML = ''; // 결과 초기화
             
             if (results.length > 0) {
                 results.forEach(item => {
@@ -174,15 +178,4 @@
         function deleteItem() {
             const deleteCode = document.getElementById('deleteCode').value.trim();
 
-            if (deleteCode) {
-                items = items.filter(item => item.code !== deleteCode);
-                saveItemsToLocalStorage();
-                alert('아이템이 삭제되었습니다.');
-            } else {
-                alert('삭제할 아이템 코드를 입력해주세요.');
-            }
-        }
-    </script>
-</body>
-
-</html>
+            if (deleteC
