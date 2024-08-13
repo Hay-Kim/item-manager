@@ -209,10 +209,10 @@
                 <select id="sortOrder">
                     <option value="recent">Most Recent</option>
                     <option value="oldest">Oldest First</option>
-                    <option value="textAsc">Alphabetical (A-Z)</option>
-                    <option value="textDesc">Alphabetical (Z-A)</option>
-                    <option value="numAsc">Numerical Ascending</option>
-                    <option value="numDesc">Numerical Descending</option>
+                    <option value="korAsc">한글 오름차순</option>
+                    <option value="korDesc">한글 내림차순</option>
+                    <option value="engAsc">영어 오름차순</option>
+                    <option value="engDesc">영어 내림차순</option>
                 </select>
                 <button onclick="sortItems()">Sort</button>
             </div>
@@ -296,14 +296,14 @@
                     return new Date(b.date) - new Date(a.date);
                 } else if (sortOrder === 'oldest') {
                     return new Date(a.date) - new Date(b.date);
-                } else if (sortOrder === 'textAsc') {
-                    return a.name.localeCompare(b.name) || a.code.localeCompare(b.code);
-                } else if (sortOrder === 'textDesc') {
-                    return b.name.localeCompare(a.name) || b.code.localeCompare(a.code);
-                } else if (sortOrder === 'numAsc') {
-                    return parseInt(a.code.match(/\d+/), 10) - parseInt(b.code.match(/\d+/), 10);
-                } else if (sortOrder === 'numDesc') {
-                    return parseInt(b.code.match(/\d+/), 10) - parseInt(a.code.match(/\d+/), 10);
+                } else if (sortOrder === 'korAsc') {
+                    return a.name.localeCompare(b.name, 'ko') || a.code.localeCompare(b.code, 'ko');
+                } else if (sortOrder === 'korDesc') {
+                    return b.name.localeCompare(a.name, 'ko') || b.code.localeCompare(a.code, 'ko');
+                } else if (sortOrder === 'engAsc') {
+                    return a.name.localeCompare(b.name, 'en') || a.code.localeCompare(b.code, 'en');
+                } else if (sortOrder === 'engDesc') {
+                    return b.name.localeCompare(a.name, 'en') || b.code.localeCompare(a.code, 'en');
                 }
             });
 
