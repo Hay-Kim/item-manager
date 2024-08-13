@@ -139,6 +139,18 @@
         .sort-filter-container button:hover {
             background-color: #e5533d;
         }
+
+        .sort-title {
+            width: 100%;
+            padding: 10px;
+            background-color: #555;
+            color: #eee;
+            font-size: 1.5em;
+            text-align: center;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 
@@ -146,6 +158,9 @@
     <h1>재고 목록</h1>
 
     <div class="container">
+        <!-- 정렬 제목 -->
+        <div class="sort-title">등록 일자 기준 정렬</div>
+        
         <!-- 정렬 및 필터링 옵션 -->
         <div class="sort-filter-container">
             <label for="sortOrder">정렬 순서:</label>
