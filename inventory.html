@@ -250,4 +250,62 @@
             items[index].code = document.getElementById('editCode').value.trim();
             items[index].name = document.getElementById('editName').value.trim();
             items[index].location = document.getElementById('editLocation').value.trim();
-            items[index].memo = document.getElementById('
+            items[index].memo = document.getElementById('editMemo').value.trim();
+            items[index].color = document.getElementById('editColor').value.trim();
+
+            const editImageFile = document.getElementById('editImage').files[0];
+            if (editImageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    items[index].image = e.target.result;
+                    items[index].date = new Date().toISOString();
+                    saveItemsToLocalStorage();
+                    alert('아이템이 성공적으로 업데이트되었습니다.');
+                    cancelEdit();
+                    displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
+                };
+                reader.readAsDataURL(editImageFile);
+            } else {
+                items[index].date = new Date().toISOString();
+                saveItemsToLocalStorage();
+                alert('아이템이 성공적으로 업데이트되었습니다.');
+                cancelEdit();
+                displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
+            }
+        }
+
+        function saveItemsToLocalStorage() {
+            localStorage.setItem('items', JSON.stringify(items));
+        }
+
+        function deleteItem(index) {
+            items.splice(index, 1);
+            saveItemsToLocalStorage();
+            alert('아이템이 삭제되었습니다.');
+            displayItems();  // 새로고침 없이 삭제된 결과를 즉시 표시
+        }
+
+        function cancelEdit() {
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        function sortItems() {
+            const order = document.getElementById('sortOrder').value;
+
+            items.sort((a, b) => {
+                let comparison = new Date(a.date) - new Date(b.date);
+
+                return order === 'recent' ? -comparison : comparison;
+            });
+
+            displayItems();  // 정렬 후 목록을 다시 표시
+        }
+
+        window.onload = function() {
+            loadItemsFromLocalStorage();
+            displayItems();
+        }
+    </script>
+</body>
+
+</html>
