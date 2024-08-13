@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory</title>
+    <title>Item Manager</title>
     <style>
         body {
             font-family: 'Courier New', monospace;
@@ -28,10 +28,22 @@
             text-transform: uppercase;
         }
 
+        .logo {
+            width: 120px;
+            margin-top: 30px;
+            cursor: pointer;
+            filter: drop-shadow(0 0 5px #ff6347);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: rotate(-10deg) scale(1.1);
+        }
+
         .container {
             width: 80%;
             max-width: 700px;
-            margin-top: 30px;
+            margin-top: 40px;
             padding: 25px;
             background-color: #333;
             border-radius: 12px;
@@ -39,7 +51,38 @@
             border-left: 8px solid #ff6347;
         }
 
-        .item-list {
+        input[type="text"], input[type="file"], button {
+            padding: 15px;
+            font-size: 1.1em;
+            margin: 12px 0;
+            width: calc(100% - 30px);
+            box-sizing: border-box;
+            border: 2px solid #555;
+            border-radius: 6px;
+            background-color: #444;
+            color: #eee;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="file"]:focus {
+            background-color: #555;
+            border-color: #ff6347;
+        }
+
+        button {
+            background-color: #ff6347;
+            color: #222;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e5533d;
+            transform: translateY(-2px);
+        }
+
+        .result {
             margin-top: 25px;
             padding: 15px;
             background-color: #444;
@@ -50,12 +93,19 @@
             border-left: 5px solid #ff6347;
         }
 
-        .item-list p {
-            margin: 10px 0;
+        .result img {
+            max-width: 100px;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 5px;
         }
 
-        .back-button {
-            margin-top: 40px;
+        .no-result {
+            color: #ff6347;
+        }
+
+        .inventory-button {
+            margin-top: 60px;
             padding: 15px;
             background-color: #6c757d;
             color: #fff;
@@ -68,33 +118,110 @@
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
-        .back-button:hover {
+        .inventory-button:hover {
             background-color: #555;
             transform: translateY(-3px);
+        }
+
+        .action-container {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .action-container > div {
+            flex: 1;
+        }
+
+        .action-container h2 {
+            font-size: 1.5em;
+            color: #ff6347;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #ff6347;
+            padding-bottom: 5px;
         }
     </style>
 </head>
 
 <body>
-    <h1>Inventory List</h1>
+    <img src="https://pngimg.com/uploads/box/box_PNG5.png" alt="홈 로고" class="logo" onclick="refreshPage()">
+
+    <h1>Item Freak</h1>
 
     <div class="container">
-        <div id="itemList" class="item-list"></div>
-        <button class="back-button" onclick="goBack()">Go Back</button>
+        <h2>Search</h2>
+        <input type="text" id="searchTerm" placeholder="Enter search term" onkeydown="handleKeyDown(event)">
+        <button onclick="searchItem()">Search</button>
+        <div class="result" id="result"></div>
     </div>
 
+    <div class="container action-container">
+        <div>
+            <h2>Add Item</h2>
+            <input type="text" id="newCode" placeholder="Item Code">
+            <input type="text" id="newName" placeholder="Item Name">
+            <input type="text" id="newLocation" placeholder="Location">
+            <input type="text" id="newMemo" placeholder="Memo">
+            <input type="text" id="newColor" placeholder="Color">
+            <!-- 사진 업로드 기능 -->
+            <input type="file" id="newImage" accept="image/*" capture="camera">
+            <button onclick="addItem()">Add</button>
+        </div>
+        <div>
+            <h2>Delete Item</h2>
+            <input type="text" id="deleteCode" placeholder="Item Code to Delete">
+            <button onclick="deleteItem()">Delete</button>
+        </div>
+    </div>
+
+    <button class="inventory-button" onclick="goToInventory()">Check Inventory</button>
+
     <script>
-        function loadItemsFromLocalStorage() {
-            const savedItems = localStorage.getItem('items');
-            return savedItems ? JSON.parse(savedItems) : [];
+        let items = [];
+
+        function saveItemsToLocalStorage() {
+            localStorage.setItem('items', JSON.stringify(items));
         }
 
-        function displayItems() {
-            const items = loadItemsFromLocalStorage();
-            const itemListDiv = document.getElementById('itemList');
+        function loadItemsFromLocalStorage() {
+            const savedItems = localStorage.getItem('items');
+            if (savedItems) {
+                items = JSON.parse(savedItems);
+            }
+        }
 
-            if (items.length > 0) {
-                items.forEach(item => {
+        function refreshPage() {
+            window.location.reload(); // 페이지 새로고침
+        }
+
+        function goToInventory() {
+            window.location.href = 'inventory.html'; // 재고 확인 페이지로 이동
+        }
+
+        window.onload = function() {
+            loadItemsFromLocalStorage();
+            window.scrollTo(0, 0);  // 페이지 로드 시 맨 위로 스크롤
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === "Enter" || event.keyCode === 13) {
+                searchItem();
+            }
+        }
+
+        function searchItem() {
+            const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // 검색 결과 초기화
+
+            const results = items.filter(item => 
+                item.code.toLowerCase().includes(searchTerm) || 
+                item.name.toLowerCase().includes(searchTerm)
+            );
+            
+            if (results.length > 0) {
+                results.forEach(item => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
                         <p><strong>Item Code:</strong> ${item.code}</p>
@@ -102,20 +229,78 @@
                         <p><strong>Location:</strong> ${item.location}</p>
                         <p><strong>Memo:</strong> ${item.memo}</p>
                         <p><strong>Color:</strong> ${item.color}</p>
+                        <img src="${item.image}" alt="${item.name}" style="width: 100px; height: auto;">
                         <hr>
                     `;
-                    itemListDiv.appendChild(itemDiv);
+                    resultDiv.appendChild(itemDiv);
                 });
             } else {
-                itemListDiv.innerHTML = `<p>No items available.</p>`;
+                resultDiv.innerHTML = `<p class="no-result">No items found matching the criteria.</p>`;
+            }
+
+            // 검색 후 화면을 맨 위로 스크롤
+            window.scrollTo(0, 0);
+        }
+
+        function addItem() {
+            const newCode = document.getElementById('newCode').value.trim();
+            const newName = document.getElementById('newName').value.trim();
+            const newLocation = document.getElementById('newLocation').value.trim();
+            const newMemo = document.getElementById('newMemo').value.trim();
+            const newColor = document.getElementById('newColor').value.trim();
+            const newImageFile = document.getElementById('newImage').files[0];
+
+            if (newCode && newName && newLocation) {
+                let newItem = {
+                    code: newCode,
+                    name: newName,
+                    location: newLocation,
+                    memo: newMemo,
+                    color: newColor,
+                    image: ''
+                };
+
+                if (newImageFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        newItem.image = e.target.result;
+                        items.push(newItem);
+                        saveItemsToLocalStorage();
+                        alert('Item added successfully.');
+                        clearAddItemForm();
+                    };
+                    reader.readAsDataURL(newImageFile);
+                } else {
+                    items.push(newItem);
+                    saveItemsToLocalStorage();
+                    alert('Item added successfully.');
+                    clearAddItemForm();
+                }
+            } else {
+                alert('Please enter item code, name, and location.');
             }
         }
 
-        function goBack() {
-            window.location.href = 'index.html'; // 홈 페이지로 이동
+        function clearAddItemForm() {
+            document.getElementById('newCode').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newLocation').value = '';
+            document.getElementById('newMemo').value = '';
+            document.getElementById('newColor').value = '';
+            document.getElementById('newImage').value = '';
         }
 
-        window.onload = displayItems;
+        function deleteItem() {
+            const deleteCode = document.getElementById('deleteCode').value.trim();
+
+            if (deleteCode) {
+                items = items.filter(item => item.code !== deleteCode);
+                saveItemsToLocalStorage();
+                alert('Item deleted successfully.');
+            } else {
+                alert('Please enter the item code to delete.');
+            }
+        }
     </script>
 </body>
 
