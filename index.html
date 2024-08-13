@@ -384,6 +384,18 @@
             }
         }
 
+        function validateForm() {
+            const newCode = document.getElementById('newCode').value.trim();
+            const newName = document.getElementById('newName').value.trim();
+            const newLocation = document.getElementById('newLocation').value.trim();
+
+            if (newCode === '' || newName === '' || newLocation === '') {
+                alert('Please fill in the required fields: Item Code, Item Name, and Location.');
+                return;
+            }
+            addItem();
+        }
+
         function addItem() {
             const newCode = document.getElementById('newCode').value.trim();
             const newName = document.getElementById('newName').value.trim();
@@ -424,6 +436,15 @@
             } else {
                 alert('Please enter item code, name, and location.');
             }
+        }
+
+        function clearAddItemForm() {
+            document.getElementById('newCode').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newLocation').value = '';
+            document.getElementById('newMemo').value = '';
+            document.getElementById('newColor').value = '';
+            document.getElementById('newImage').value = '';
         }
 
         function editItem(index) {
