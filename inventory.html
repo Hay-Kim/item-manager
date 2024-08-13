@@ -193,12 +193,19 @@
         <h1 onclick="goHome()">Inventory List</h1>
 
         <div class="container">
-            <!-- Sort Title -->
-            <div class="sort-title">Sort by Registration Date</div>
-            
             <!-- Sort and Filter Options -->
             <div class="sort-filter-container">
-                <label for="sortOrder">Sort Order:</label>
+                <label for="sortCategory">Sort By:</label>
+                <select id="sortCategory">
+                    <option value="all">All Categories</option>
+                    <option value="itemCode">Item Code</option>
+                    <option value="itemName">Item Name</option>
+                    <option value="location">Location</option>
+                    <option value="memo">Memo</option>
+                    <option value="color">Color</option>
+                </select>
+
+                <label for="sortOrder">Order:</label>
                 <select id="sortOrder">
                     <option value="recent">Most Recent</option>
                     <option value="oldest">Oldest First</option>
@@ -239,12 +246,12 @@
             }
         }
 
-        function displayItems() {
+        function displayItems(filteredItems = items) {
             const itemListDiv = document.getElementById('itemList');
             itemListDiv.innerHTML = ''; // Clear existing content
 
-            if (items.length > 0) {
-                items.forEach((item, index) => {
+            if (filteredItems.length > 0) {
+                filteredItems.forEach((item, index) => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
                         <p><strong>Item Code:</strong> ${item.code}</p>
@@ -262,6 +269,33 @@
             } else {
                 itemListDiv.innerHTML = `<p>No items available.</p>`;
             }
+        }
+
+        function applyCategoryFilter(items, category) {
+            if (category === 'all') {
+                return items;
+            }
+
+            return items.filter(item => {
+                return item[category];
+            });
+        }
+
+        function sortItems() {
+            const sortCategory = document.getElementById('sortCategory').value;
+            const sortOrder = document.getElementById('sortOrder').value;
+
+            let filteredItems = applyCategoryFilter(items, sortCategory);
+
+            filteredItems.sort((a, b) => {
+                if (sortOrder === 'recent') {
+                    return new Date(b.date) - new Date(a.date);
+                } else {
+                    return new Date(a.date) - new Date(b.date);
+                }
+            });
+
+            displayItems(filteredItems);
         }
 
         function goBack() {
@@ -325,18 +359,6 @@
 
         function cancelEdit() {
             document.getElementById('editForm').style.display = 'none';
-        }
-
-        function sortItems() {
-            const sortOrder = document.getElementById('sortOrder').value;
-            items.sort((a, b) => {
-                if (sortOrder === 'recent') {
-                    return new Date(b.date) - new Date(a.date);
-                } else {
-                    return new Date(a.date) - new Date(b.date);
-                }
-            });
-            displayItems();
         }
 
         window.onload = function() {
