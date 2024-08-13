@@ -243,6 +243,18 @@
             margin-bottom: 20px;
             font-size: 1em;
         }
+
+        .edit-form {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #D4D4D4;
+            border-radius: 4px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #7D7D7D;
+        }
     </style>
 </head>
 
@@ -293,6 +305,19 @@
         <button onclick="cancelDelete()">Cancel</button>
     </div>
 
+    <div class="edit-form" id="editForm">
+        <h2>Edit Item</h2>
+        <input type="hidden" id="editIndex">
+        <input type="text" id="editCode" placeholder="*Item Code*" required>
+        <input type="text" id="editName" placeholder="*Item Name*" required>
+        <input type="text" id="editLocation" placeholder="*Location*" required>
+        <input type="text" id="editMemo" placeholder="Memo">
+        <input type="text" id="editColor" placeholder="Color">
+        <input type="file" id="editImage" accept="image/*" capture="camera">
+        <button onclick="saveItem()">Save</button>
+        <button onclick="cancelEdit()">Cancel</button>
+    </div>
+
     <script>
         let items = [];
         let deleteIndex = -1;
@@ -335,8 +360,8 @@
                         <p><strong>Item Name:</strong> ${item.name}</p>
                         <p><strong>Location:</strong> ${item.location}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
-                        <button onclick="editItem(${index}, 'search')">Edit</button>
-                        <button onclick="showDeletePopup(${index}, 'search')">Delete</button>
+                        <button onclick="editItem(${index})">Edit</button>
+                        <button onclick="showDeletePopup(${index})">Delete</button>
                         <hr>
                     `;
                     resultDiv.appendChild(itemDiv);
@@ -359,8 +384,8 @@
                         <p><strong>Item Name:</strong> ${item.name}</p>
                         <p><strong>Location:</strong> ${item.location}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
-                        <button onclick="editItem(${index}, 'recent')">Edit</button>
-                        <button onclick="showDeletePopup(${index}, 'recent')">Delete</button>
+                        <button onclick="editItem(${index})">Edit</button>
+                        <button onclick="showDeletePopup(${index})">Delete</button>
                         <hr>
                     `;
                     recentItemsDiv.appendChild(itemDiv);
@@ -429,21 +454,20 @@
             window.location.reload(); // Refresh the current page
         }
 
-        function showDeletePopup(index, source) {
-            deleteIndex = { index, source };
+        function goHome() {
+            window.location.href = 'index.html'; // Redirect to the home page
+        }
+
+        function showDeletePopup(index) {
+            deleteIndex = index;
             document.getElementById('deletePopup').style.display = 'block';
         }
 
         function confirmDelete() {
-            const { index, source } = deleteIndex;
-            if (source === 'search') {
-                deleteItem(index);
-                searchItems();
-            } else if (source === 'recent') {
-                deleteItem(index);
-                displayRecentItems();
-            }
+            deleteItem(deleteIndex);
             document.getElementById('deletePopup').style.display = 'none';
+            searchItems();  // Refresh search results if an item was deleted from search
+            displayRecentItems();  // Refresh recent items if an item was deleted
         }
 
         function cancelDelete() {
@@ -457,7 +481,7 @@
             alert('Item deleted successfully.');
         }
 
-        function editItem(index, source) {
+        function editItem(index) {
             const item = items[index];
             document.getElementById('editIndex').value = index;
             document.getElementById('editCode').value = item.code;
@@ -468,6 +492,39 @@
             document.getElementById('editImage').value = '';  // Clear image input
             document.getElementById('editForm').style.display = 'block';
             window.scrollTo(0, document.getElementById('editForm').offsetTop);  // Scroll to edit form
+        }
+
+        function saveItem() {
+            const index = document.getElementById('editIndex').value;
+            items[index].code = document.getElementById('editCode').value.trim();
+            items[index].name = document.getElementById('editName').value.trim();
+            items[index].location = document.getElementById('editLocation').value.trim();
+            items[index].memo = document.getElementById('editMemo').value.trim();
+            items[index].color = document.getElementById('editColor').value.trim();
+
+            const editImageFile = document.getElementById('editImage').files[0];
+            if (editImageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    items[index].image = e.target.result;
+                    saveItemsToLocalStorage();
+                    alert('Item updated successfully.');
+                    cancelEdit();
+                    searchItems();  // Refresh search results if the item was updated
+                    displayRecentItems();  // Refresh recent items if the item was updated
+                };
+                reader.readAsDataURL(editImageFile);
+            } else {
+                saveItemsToLocalStorage();
+                alert('Item updated successfully.');
+                cancelEdit();
+                searchItems();  // Refresh search results if the item was updated
+                displayRecentItems();  // Refresh recent items if the item was updated
+            }
+        }
+
+        function cancelEdit() {
+            document.getElementById('editForm').style.display = 'none';
         }
 
         window.onload = function() {
