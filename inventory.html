@@ -62,6 +62,21 @@
             display: block;
         }
 
+        .item-list button {
+            margin-right: 10px;
+            background-color: #ff6347;
+            color: #222;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .item-list button:hover {
+            background-color: #e5533d;
+        }
+
         .back-button {
             margin-top: 40px;
             padding: 15px;
@@ -80,6 +95,18 @@
             background-color: #555;
             transform: translateY(-3px);
         }
+
+        .edit-form {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #444;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            box-sizing: border-box;
+            border-left: 5px solid #ff6347;
+        }
     </style>
 </head>
 
@@ -88,21 +115,37 @@
 
     <div class="container">
         <div id="itemList" class="item-list"></div>
+        <div class="edit-form" id="editForm">
+            <h2>Edit Item</h2>
+            <input type="hidden" id="editIndex">
+            <input type="text" id="editCode" placeholder="Item Code">
+            <input type="text" id="editName" placeholder="Item Name">
+            <input type="text" id="editLocation" placeholder="Location">
+            <input type="text" id="editMemo" placeholder="Memo">
+            <input type="text" id="editColor" placeholder="Color">
+            <input type="file" id="editImage" accept="image/*" capture="camera">
+            <button onclick="saveItem()">Save</button>
+            <button onclick="cancelEdit()">Cancel</button>
+        </div>
         <button class="back-button" onclick="goBack()">Go Back</button>
     </div>
 
     <script>
+        let items = [];
+
         function loadItemsFromLocalStorage() {
             const savedItems = localStorage.getItem('items');
-            return savedItems ? JSON.parse(savedItems) : [];
+            if (savedItems) {
+                items = JSON.parse(savedItems);
+            }
         }
 
         function displayItems() {
-            const items = loadItemsFromLocalStorage();
             const itemListDiv = document.getElementById('itemList');
+            itemListDiv.innerHTML = ''; // 기존 내용을 초기화
 
             if (items.length > 0) {
-                items.forEach(item => {
+                items.forEach((item, index) => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
                         <p><strong>Item Code:</strong> ${item.code}</p>
@@ -111,6 +154,8 @@
                         <p><strong>Memo:</strong> ${item.memo}</p>
                         <p><strong>Color:</strong> ${item.color}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
+                        <button onclick="editItem(${index})">Edit</button>
+                        <button onclick="deleteItem(${index})">Delete</button>
                         <hr>
                     `;
                     itemListDiv.appendChild(itemDiv);
@@ -124,7 +169,61 @@
             window.location.href = 'index.html'; // 홈 페이지로 이동
         }
 
-        window.onload = displayItems;
+        function editItem(index) {
+            const item = items[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editCode').value = item.code;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editLocation').value = item.location;
+            document.getElementById('editMemo').value = item.memo;
+            document.getElementById('editColor').value = item.color;
+            document.getElementById('editImage').value = '';  // 이미지 입력 초기화
+            document.getElementById('editForm').style.display = 'block';
+            window.scrollTo(0, document.getElementById('editForm').offsetTop);  // 수정 폼으로 스크롤 이동
+        }
+
+        function saveItem() {
+            const index = document.getElementById('editIndex').value;
+            items[index].code = document.getElementById('editCode').value.trim();
+            items[index].name = document.getElementById('editName').value.trim();
+            items[index].location = document.getElementById('editLocation').value.trim();
+            items[index].memo = document.getElementById('editMemo').value.trim();
+            items[index].color = document.getElementById('editColor').value.trim();
+
+            const editImageFile = document.getElementById('editImage').files[0];
+            if (editImageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    items[index].image = e.target.result;
+                    saveItemsToLocalStorage();
+                    alert('Item updated successfully.');
+                    cancelEdit();
+                    displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
+                };
+                reader.readAsDataURL(editImageFile);
+            } else {
+                saveItemsToLocalStorage();
+                alert('Item updated successfully.');
+                cancelEdit();
+                displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
+            }
+        }
+
+        function deleteItem(index) {
+            items.splice(index, 1);
+            saveItemsToLocalStorage();
+            alert('Item deleted successfully.');
+            displayItems();  // 새로고침 없이 삭제된 결과를 즉시 표시
+        }
+
+        function cancelEdit() {
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        window.onload = function() {
+            loadItemsFromLocalStorage();
+            displayItems();
+        }
     </script>
 </body>
 
