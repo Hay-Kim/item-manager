@@ -7,8 +7,9 @@
     <title>Inventory</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Courier New', monospace;
+            background-color: #222;
+            color: #eee;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -16,61 +17,70 @@
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
+            text-shadow: 2px 2px #000;
         }
 
         h1 {
-            color: #333;
+            color: #ff6347;
             text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-transform: uppercase;
         }
 
         .container {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 700px;
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #333;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-left: 8px solid #ff6347;
         }
 
         .item-list {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #444;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             width: 100%;
             box-sizing: border-box;
+            border-left: 5px solid #ff6347;
         }
 
         .item-list p {
-            margin: 5px 0;
+            margin: 10px 0;
         }
 
         .back-button {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
+            margin-top: 40px;
+            padding: 15px;
+            background-color: #6c757d;
+            color: #fff;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            width: 100%;
+            font-size: 1.2em;
+            width: 50%;
             box-sizing: border-box;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .back-button:hover {
-            background-color: #0056b3;
+            background-color: #555;
+            transform: translateY(-3px);
         }
     </style>
 </head>
 
 <body>
-    <h1>재고 목록</h1>
+    <h1>Inventory List</h1>
 
     <div class="container">
         <div id="itemList" class="item-list"></div>
-        <button class="back-button" onclick="goBack()">홈으로</button>
+        <button class="back-button" onclick="goBack()">Go Back</button>
     </div>
 
     <script>
@@ -87,17 +97,17 @@
                 items.forEach(item => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
-                        <p><strong>아이템 코드:</strong> ${item.code}</p>
-                        <p><strong>아이템 이름:</strong> ${item.name}</p>
-                        <p><strong>위치:</strong> ${item.location}</p>
-                        <p><strong>메모:</strong> ${item.memo}</p>
-                        <p><strong>색상:</strong> ${item.color}</p>
+                        <p><strong>Item Code:</strong> ${item.code}</p>
+                        <p><strong>Item Name:</strong> ${item.name}</p>
+                        <p><strong>Location:</strong> ${item.location}</p>
+                        <p><strong>Memo:</strong> ${item.memo}</p>
+                        <p><strong>Color:</strong> ${item.color}</p>
                         <hr>
                     `;
                     itemListDiv.appendChild(itemDiv);
                 });
             } else {
-                itemListDiv.innerHTML = `<p>저장된 아이템이 없습니다.</p>`;
+                itemListDiv.innerHTML = `<p>No items available.</p>`;
             }
         }
 
@@ -105,7 +115,6 @@
             window.location.href = 'index.html'; // 홈 페이지로 이동
         }
 
-        // 페이지 로드 시 아이템 목록 표시
         window.onload = displayItems;
     </script>
 </body>
