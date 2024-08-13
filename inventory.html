@@ -108,6 +108,37 @@
             box-sizing: border-box;
             border-left: 5px solid #ff6347;
         }
+
+        .sort-filter-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .sort-filter-container select {
+            padding: 10px;
+            font-size: 1em;
+            background-color: #444;
+            color: #eee;
+            border: 2px solid #555;
+            border-radius: 6px;
+            margin-right: 10px;
+        }
+
+        .sort-filter-container button {
+            background-color: #ff6347;
+            color: #222;
+            border: none;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sort-filter-container button:hover {
+            background-color: #e5533d;
+        }
     </style>
 </head>
 
@@ -115,7 +146,24 @@
     <h1>Inventory List</h1>
 
     <div class="container">
+        <!-- 정렬 및 필터링 옵션 추가 -->
+        <div class="sort-filter-container">
+            <label for="sortCriteria">Sort by:</label>
+            <select id="sortCriteria">
+                <option value="name">Name</option>
+                <option value="code">Code</option>
+                <option value="location">Location</option>
+            </select>
+            <label for="sortOrder">Order:</label>
+            <select id="sortOrder">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+            <button onclick="sortItems()">Sort</button>
+        </div>
+        
         <div id="itemList" class="item-list"></div>
+
         <div class="edit-form" id="editForm">
             <h2>Edit Item</h2>
             <input type="hidden" id="editIndex">
@@ -222,13 +270,31 @@
         function deleteItem(index) {
             items.splice(index, 1);
             saveItemsToLocalStorage();
-            alert('Item deleted successfully
-                  
+            alert('Item deleted successfully.');
             displayItems();  // 새로고침 없이 삭제된 결과를 즉시 표시
         }
 
         function cancelEdit() {
             document.getElementById('editForm').style.display = 'none';
+        }
+
+        function sortItems() {
+            const criteria = document.getElementById('sortCriteria').value;
+            const order = document.getElementById('sortOrder').value;
+
+            items.sort((a, b) => {
+                let comparison = 0;
+
+                if (a[criteria] > b[criteria]) {
+                    comparison = 1;
+                } else if (a[criteria] < b[criteria]) {
+                    comparison = -1;
+                }
+
+                return order === 'asc' ? comparison : -comparison;
+            });
+
+            displayItems();  // 정렬 후 목록을 다시 표시
         }
 
         window.onload = function() {
