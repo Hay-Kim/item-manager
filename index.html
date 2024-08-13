@@ -154,6 +154,37 @@
             box-sizing: border-box;
             border-left: 5px solid #ff6347;
         }
+
+        .sort-filter-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .sort-filter-container select {
+            padding: 10px;
+            font-size: 1em;
+            background-color: #444;
+            color: #eee;
+            border: 2px solid #555;
+            border-radius: 6px;
+            margin-right: 10px;
+        }
+
+        .sort-filter-container button {
+            background-color: #ff6347;
+            color: #222;
+            border: none;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sort-filter-container button:hover {
+            background-color: #e5533d;
+        }
     </style>
 </head>
 
@@ -166,6 +197,20 @@
         <h2>Search</h2>
         <input type="text" id="searchTerm" placeholder="Enter search term" onkeydown="handleKeyDown(event)">
         <button onclick="searchItem()">Search</button>
+        <div class="sort-filter-container">
+            <label for="sortCriteria">Sort by:</label>
+            <select id="sortCriteria">
+                <option value="name">Name</option>
+                <option value="code">Code</option>
+                <option value="location">Location</option>
+            </select>
+            <label for="sortOrder">Order:</label>
+            <select id="sortOrder">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+            <button onclick="sortItems()">Sort</button>
+        </div>
         <div class="result" id="result"></div>
     </div>
 
@@ -270,6 +315,25 @@
 
             // 검색 후 화면을 맨 위로 스크롤
             window.scrollTo(0, 0);
+        }
+
+        function sortItems() {
+            const criteria = document.getElementById('sortCriteria').value;
+            const order = document.getElementById('sortOrder').value;
+
+            items.sort((a, b) => {
+                let comparison = 0;
+
+                if (a[criteria] > b[criteria]) {
+                    comparison = 1;
+                } else if (a[criteria] < b[criteria]) {
+                    comparison = -1;
+                }
+
+                return order === 'asc' ? comparison : -comparison;
+            });
+
+            searchItem();  // 정렬 후 목록을 다시 표시
         }
 
         function addItem() {
