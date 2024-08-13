@@ -23,16 +23,16 @@
             color: #333;
         }
 
-        .search-container, .add-item-container, .delete-item-container {
-            margin-top: 20px;
+        .container {
             width: 100%;
             max-width: 600px;
+            margin-top: 20px;
         }
 
         input[type="text"], button {
             padding: 10px;
             font-size: 16px;
-            margin: 5px;
+            margin: 5px 0;
             width: calc(100% - 20px);
             box-sizing: border-box;
         }
@@ -64,14 +64,16 @@
 
 <body>
     <h1>물건 위치 검색 및 관리</h1>
-    <div class="search-container">
+
+    <div class="container">
+        <h2>검색</h2>
         <input type="text" id="searchTerm" placeholder="검색어를 입력하세요" onkeydown="handleKeyDown(event)">
         <button onclick="searchItem()">검색</button>
         <div class="result" id="result"></div>
     </div>
 
-    <h2>새 아이템 추가</h2>
-    <div class="add-item-container">
+    <div class="container">
+        <h2>새 아이템 추가</h2>
         <input type="text" id="newCode" placeholder="아이템 코드">
         <input type="text" id="newName" placeholder="아이템 이름">
         <input type="text" id="newLocation" placeholder="위치">
@@ -80,8 +82,8 @@
         <button onclick="addItem()">아이템 추가</button>
     </div>
 
-    <h2>아이템 삭제</h2>
-    <div class="delete-item-container">
+    <div class="container">
+        <h2>아이템 삭제</h2>
         <input type="text" id="deleteCode" placeholder="삭제할 아이템 코드">
         <button onclick="deleteItem()">아이템 삭제</button>
     </div>
@@ -113,17 +115,26 @@
         function searchItem() {
             const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
             const resultDiv = document.getElementById('result');
-            const results = items.filter(item => item.code.toLowerCase().includes(searchTerm) || item.name.toLowerCase().includes(searchTerm));
+            const results = items.filter(item => 
+                item.code.toLowerCase().includes(searchTerm) || 
+                item.name.toLowerCase().includes(searchTerm)
+            );
+            
+            resultDiv.innerHTML = ''; // 결과 초기화
             
             if (results.length > 0) {
-                resultDiv.innerHTML = results.map(item => `
-                    <p><strong>아이템 코드:</strong> ${item.code}</p>
-                    <p><strong>아이템 이름:</strong> ${item.name}</p>
-                    <p><strong>위치:</strong> ${item.location}</p>
-                    <p><strong>메모:</strong> ${item.memo}</p>
-                    <p><strong>색상:</strong> ${item.color}</p>
-                    <hr>
-                `).join('');
+                results.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.innerHTML = `
+                        <p><strong>아이템 코드:</strong> ${item.code}</p>
+                        <p><strong>아이템 이름:</strong> ${item.name}</p>
+                        <p><strong>위치:</strong> ${item.location}</p>
+                        <p><strong>메모:</strong> ${item.memo}</p>
+                        <p><strong>색상:</strong> ${item.color}</p>
+                        <hr>
+                    `;
+                    resultDiv.appendChild(itemDiv);
+                });
             } else {
                 resultDiv.innerHTML = `<p class="no-result">해당 조건에 맞는 아이템을 찾을 수 없습니다.</p>`;
             }
