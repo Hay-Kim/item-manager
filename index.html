@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Item Manager</title>
+    <title>Inventory</title>
     <style>
-        /* 기본 스타일 */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,15 +18,9 @@
             min-height: 100vh;
         }
 
-        h1, h2 {
+        h1 {
             color: #333;
             text-align: center;
-        }
-
-        .logo {
-            width: 150px;
-            margin-top: 20px;
-            cursor: pointer;
         }
 
         .container {
@@ -40,26 +33,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        input[type="text"], button {
-            padding: 10px;
-            font-size: 16px;
-            margin: 10px 0;
-            width: calc(100% - 20px);
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .result {
+        .item-list {
             margin-top: 20px;
             padding: 10px;
             background-color: #f9f9f9;
@@ -69,81 +43,48 @@
             box-sizing: border-box;
         }
 
-        .no-result {
-            color: red;
+        .item-list p {
+            margin: 5px 0;
+        }
+
+        .back-button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 
 <body>
-    <img src="https://pngimg.com/uploads/box/box_PNG5.png" alt="홈 로고" class="logo" onclick="refreshPage()">
-
-    <h1>물건 위치 검색 및 관리</h1>
+    <h1>재고 목록</h1>
 
     <div class="container">
-        <h2>검색</h2>
-        <input type="text" id="searchTerm" placeholder="검색어를 입력하세요" onkeydown="handleKeyDown(event)">
-        <button onclick="searchItem()">검색</button>
-        <div class="result" id="result"></div>
-    </div>
-
-    <div class="container">
-        <h2>새 아이템 추가</h2>
-        <input type="text" id="newCode" placeholder="아이템 코드">
-        <input type="text" id="newName" placeholder="아이템 이름">
-        <input type="text" id="newLocation" placeholder="위치">
-        <input type="text" id="newMemo" placeholder="메모">
-        <input type="text" id="newColor" placeholder="색상">
-        <button onclick="addItem()">아이템 추가</button>
-    </div>
-
-    <div class="container">
-        <h2>아이템 삭제</h2>
-        <input type="text" id="deleteCode" placeholder="삭제할 아이템 코드">
-        <button onclick="deleteItem()">아이템 삭제</button>
+        <div id="itemList" class="item-list"></div>
+        <button class="back-button" onclick="goBack()">홈으로</button>
     </div>
 
     <script>
-        let items = [];
-
-        function saveItemsToLocalStorage() {
-            localStorage.setItem('items', JSON.stringify(items));
-        }
-
         function loadItemsFromLocalStorage() {
             const savedItems = localStorage.getItem('items');
-            if (savedItems) {
-                items = JSON.parse(savedItems);
-            }
+            return savedItems ? JSON.parse(savedItems) : [];
         }
 
-        function refreshPage() {
-            window.location.reload(); // 페이지 새로고침
-        }
+        function displayItems() {
+            const items = loadItemsFromLocalStorage();
+            const itemListDiv = document.getElementById('itemList');
 
-        window.onload = function() {
-            loadItemsFromLocalStorage();
-            window.scrollTo(0, 0);  // 페이지 로드 시 맨 위로 스크롤
-        }
-
-        function handleKeyDown(event) {
-            if (event.key === "Enter" || event.keyCode === 13) {
-                searchItem();
-            }
-        }
-
-        function searchItem() {
-            const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = ''; // 검색 결과 초기화
-
-            const results = items.filter(item => 
-                item.code.toLowerCase().includes(searchTerm) || 
-                item.name.toLowerCase().includes(searchTerm)
-            );
-            
-            if (results.length > 0) {
-                results.forEach(item => {
+            if (items.length > 0) {
+                items.forEach(item => {
                     const itemDiv = document.createElement('div');
                     itemDiv.innerHTML = `
                         <p><strong>아이템 코드:</strong> ${item.code}</p>
@@ -153,58 +94,19 @@
                         <p><strong>색상:</strong> ${item.color}</p>
                         <hr>
                     `;
-                    resultDiv.appendChild(itemDiv);
+                    itemListDiv.appendChild(itemDiv);
                 });
             } else {
-                resultDiv.innerHTML = `<p class="no-result">해당 조건에 맞는 아이템을 찾을 수 없습니다.</p>`;
-            }
-
-            // 검색 후 화면을 맨 위로 스크롤
-            window.scrollTo(0, 0);
-        }
-
-        function addItem() {
-            const newCode = document.getElementById('newCode').value.trim();
-            const newName = document.getElementById('newName').value.trim();
-            const newLocation = document.getElementById('newLocation').value.trim();
-            const newMemo = document.getElementById('newMemo').value.trim();
-            const newColor = document.getElementById('newColor').value.trim();
-
-            if (newCode && newName && newLocation) {
-                items.push({
-                    code: newCode,
-                    name: newName,
-                    location: newLocation,
-                    memo: newMemo,
-                    color: newColor
-                });
-                saveItemsToLocalStorage();
-                alert('아이템이 추가되었습니다.');
-                clearAddItemForm();
-            } else {
-                alert('아이템 코드, 이름 및 위치를 입력해주세요.');
+                itemListDiv.innerHTML = `<p>저장된 아이템이 없습니다.</p>`;
             }
         }
 
-        function clearAddItemForm() {
-            document.getElementById('newCode').value = '';
-            document.getElementById('newName').value = '';
-            document.getElementById('newLocation').value = '';
-            document.getElementById('newMemo').value = '';
-            document.getElementById('newColor').value = '';
+        function goBack() {
+            window.location.href = 'index.html'; // 홈 페이지로 이동
         }
 
-        function deleteItem() {
-            const deleteCode = document.getElementById('deleteCode').value.trim();
-
-            if (deleteCode) {
-                items = items.filter(item => item.code !== deleteCode);
-                saveItemsToLocalStorage();
-                alert('아이템이 삭제되었습니다.');
-            } else {
-                alert('삭제할 아이템 코드를 입력해주세요.');
-            }
-        }
+        // 페이지 로드 시 아이템 목록 표시
+        window.onload = displayItems;
     </script>
 </body>
 
