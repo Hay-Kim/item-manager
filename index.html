@@ -178,4 +178,15 @@
         function deleteItem() {
             const deleteCode = document.getElementById('deleteCode').value.trim();
 
-            if (deleteC
+            if (deleteCode) {
+                items = items.filter(item => item.code !== deleteCode);
+                saveItemsToLocalStorage();
+                alert('아이템이 삭제되었습니다.');
+            } else {
+                alert('삭제할 아이템 코드를 입력해주세요.');
+            }
+        }
+    </script>
+</body>
+
+</html>
