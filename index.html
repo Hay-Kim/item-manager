@@ -39,6 +39,7 @@
             font-size: 1.2em;
             text-align: center;
             border-bottom: 2px solid #000;
+            cursor: pointer;
         }
 
         h1 {
@@ -222,11 +223,11 @@
 
 <body>
     <div class="window">
-        <div class="window-header">
+        <div class="window-header" onclick="goHome()">
             Inventory Control System
         </div>
 
-        <h1 onclick="refreshPage()">Item Management</h1>
+        <h1>Item Management</h1>
 
         <div class="container">
             <!-- Search Container -->
@@ -389,6 +390,10 @@
 
         function refreshPage() {
             window.location.reload(); // Refresh the current page
+        }
+
+        function goHome() {
+            window.location.href = 'index.html'; // Redirect to the home page
         }
 
         window.onload = function() {
