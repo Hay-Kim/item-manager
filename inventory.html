@@ -139,6 +139,18 @@
         .sort-filter-container button:hover {
             background-color: #e5533d;
         }
+
+        .sort-title {
+            width: 100%;
+            padding: 10px;
+            background-color: #555;
+            color: #eee;
+            font-size: 1.5em;
+            text-align: center;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 
@@ -146,6 +158,9 @@
     <h1>재고 목록</h1>
 
     <div class="container">
+        <!-- 정렬 제목 -->
+        <div class="sort-title">등록 일자 기준 정렬</div>
+        
         <!-- 정렬 및 필터링 옵션 -->
         <div class="sort-filter-container">
             <label for="sortOrder">정렬 순서:</label>
@@ -235,62 +250,4 @@
             items[index].code = document.getElementById('editCode').value.trim();
             items[index].name = document.getElementById('editName').value.trim();
             items[index].location = document.getElementById('editLocation').value.trim();
-            items[index].memo = document.getElementById('editMemo').value.trim();
-            items[index].color = document.getElementById('editColor').value.trim();
-
-            const editImageFile = document.getElementById('editImage').files[0];
-            if (editImageFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    items[index].image = e.target.result;
-                    items[index].date = new Date().toISOString();
-                    saveItemsToLocalStorage();
-                    alert('아이템이 성공적으로 업데이트되었습니다.');
-                    cancelEdit();
-                    displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
-                };
-                reader.readAsDataURL(editImageFile);
-            } else {
-                items[index].date = new Date().toISOString();
-                saveItemsToLocalStorage();
-                alert('아이템이 성공적으로 업데이트되었습니다.');
-                cancelEdit();
-                displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
-            }
-        }
-
-        function saveItemsToLocalStorage() {
-            localStorage.setItem('items', JSON.stringify(items));
-        }
-
-        function deleteItem(index) {
-            items.splice(index, 1);
-            saveItemsToLocalStorage();
-            alert('아이템이 삭제되었습니다.');
-            displayItems();  // 새로고침 없이 삭제된 결과를 즉시 표시
-        }
-
-        function cancelEdit() {
-            document.getElementById('editForm').style.display = 'none';
-        }
-
-        function sortItems() {
-            const order = document.getElementById('sortOrder').value;
-
-            items.sort((a, b) => {
-                let comparison = new Date(a.date) - new Date(b.date);
-
-                return order === 'recent' ? -comparison : comparison;
-            });
-
-            displayItems();  // 정렬 후 목록을 다시 표시
-        }
-
-        window.onload = function() {
-            loadItemsFromLocalStorage();
-            displayItems();
-        }
-    </script>
-</body>
-
-</html>
+            items[index].memo = document.getElementById('
