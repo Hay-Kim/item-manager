@@ -26,4 +26,88 @@
         .container {
             width: 100%;
             max-width: 600px;
-            margin-top: 20px
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-list {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .item-list p {
+            margin: 5px 0;
+        }
+
+        .back-button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>재고 목록</h1>
+
+    <div class="container">
+        <div id="itemList" class="item-list"></div>
+        <button class="back-button" onclick="goBack()">홈으로</button>
+    </div>
+
+    <script>
+        function loadItemsFromLocalStorage() {
+            const savedItems = localStorage.getItem('items');
+            return savedItems ? JSON.parse(savedItems) : [];
+        }
+
+        function displayItems() {
+            const items = loadItemsFromLocalStorage();
+            const itemListDiv = document.getElementById('itemList');
+
+            if (items.length > 0) {
+                items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.innerHTML = `
+                        <p><strong>아이템 코드:</strong> ${item.code}</p>
+                        <p><strong>아이템 이름:</strong> ${item.name}</p>
+                        <p><strong>위치:</strong> ${item.location}</p>
+                        <p><strong>메모:</strong> ${item.memo}</p>
+                        <p><strong>색상:</strong> ${item.color}</p>
+                        <hr>
+                    `;
+                    itemListDiv.appendChild(itemDiv);
+                });
+            } else {
+                itemListDiv.innerHTML = `<p>저장된 아이템이 없습니다.</p>`;
+            }
+        }
+
+        function goBack() {
+            window.location.href = 'index.html'; // 홈 페이지로 이동
+        }
+
+        // 페이지 로드 시 아이템 목록 표시
+        window.onload = displayItems;
+    </script>
+</body>
+
+</html>
