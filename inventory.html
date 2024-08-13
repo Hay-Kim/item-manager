@@ -18,6 +18,7 @@
             justify-content: flex-start;
             min-height: 100vh;
             text-shadow: 2px 2px #000;
+            position: relative;
         }
 
         h1 {
@@ -118,9 +119,9 @@
         <div class="edit-form" id="editForm">
             <h2>Edit Item</h2>
             <input type="hidden" id="editIndex">
-            <input type="text" id="editCode" placeholder="Item Code">
-            <input type="text" id="editName" placeholder="Item Name">
-            <input type="text" id="editLocation" placeholder="Location">
+            <input type="text" id="editCode" placeholder="*Item Code*">
+            <input type="text" id="editName" placeholder="*Item Name*">
+            <input type="text" id="editLocation" placeholder="*Location*">
             <input type="text" id="editMemo" placeholder="Memo">
             <input type="text" id="editColor" placeholder="Color">
             <input type="file" id="editImage" accept="image/*" capture="camera">
@@ -128,6 +129,11 @@
             <button onclick="cancelEdit()">Cancel</button>
         </div>
         <button class="back-button" onclick="goBack()">Go Back</button>
+
+        <!-- 개발자 이름 추가 -->
+        <div style="text-align: center; margin-top: 20px; color: #bbb;">
+            <p>Developed by 지중해</p>
+        </div>
     </div>
 
     <script>
