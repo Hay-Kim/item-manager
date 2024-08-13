@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -39,7 +39,6 @@
             font-size: 1.2em;
             text-align: center;
             border-bottom: 2px solid #000;
-            cursor: pointer;
         }
 
         h1 {
@@ -49,6 +48,7 @@
             font-size: 1.5em;
             text-transform: uppercase;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .container {
@@ -95,7 +95,7 @@
             background-color: #555;
         }
 
-        .result-items, .recent-items {
+        .result-items {
             margin-top: 10px;
             padding: 10px;
             background-color: #D4D4D4;
@@ -107,36 +107,19 @@
             text-align: left;
         }
 
-        .result-items p, .recent-items p {
+        .result-items p {
             margin: 5px 0;
             font-family: 'Courier New', monospace;
             font-size: 0.8em;
         }
 
-        .result-items img, .recent-items img {
+        .result-items img {
             max-width: 60px;
             height: auto;
             margin-top: 5px;
             border-radius: 3px;
             display: block;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        }
-
-        .result-items button, .recent-items button {
-            margin-right: 10px;
-            background-color: #7D7D7D;
-            color: #FFF;
-            border: 1px solid #000;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .result-items button:hover, .recent-items button:hover {
-            background-color: #555;
         }
 
         .inventory-button {
@@ -208,9 +191,8 @@
             background-color: #555;
         }
 
-        .edit-form {
-            display: none;
-            margin-top: 20px;
+        .recent-items {
+            margin-top: 10px;
             padding: 10px;
             background-color: #D4D4D4;
             border-radius: 4px;
@@ -218,6 +200,48 @@
             width: 100%;
             box-sizing: border-box;
             border: 1px solid #7D7D7D;
+            text-align: left;
+        }
+
+        .recent-items p {
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+        }
+
+        .recent-items img {
+            max-width: 60px;
+            height: auto;
+            margin-top: 5px;
+            border-radius: 3px;
+            display: block;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 삭제 확인 팝업 스타일 */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 20px;
+            background-color: #FFF;
+            border: 2px solid #000;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            text-align: center;
+            display: none;
+        }
+
+        .popup button {
+            width: 80px;
+            margin: 10px;
+        }
+
+        .popup-message {
+            margin-bottom: 20px;
+            font-size: 1em;
         }
     </style>
 </head>
@@ -228,7 +252,7 @@
             Inventory Control System
         </div>
 
-        <h1>Item Management</h1>
+        <h1 onclick="refreshPage()">Item Management</h1>
 
         <div class="container">
             <!-- Search Container -->
@@ -260,24 +284,18 @@
 
             <button class="inventory-button" onclick="goToInventory()">Check Inventory</button>
         </div>
+    </div>
 
-        <!-- Edit Form -->
-        <div class="edit-form" id="editForm">
-            <h2>Edit Item</h2>
-            <input type="hidden" id="editIndex">
-            <input type="text" id="editCode" placeholder="Item Code" required>
-            <input type="text" id="editName" placeholder="Item Name" required>
-            <input type="text" id="editLocation" placeholder="Location" required>
-            <input type="text" id="editMemo" placeholder="Memo">
-            <input type="text" id="editColor" placeholder="Color">
-            <input type="file" id="editImage" accept="image/*" capture="camera">
-            <button onclick="saveItem()">Save</button>
-            <button onclick="cancelEdit()">Cancel</button>
-        </div>
+    <!-- 삭제 확인 팝업 -->
+    <div id="deletePopup" class="popup">
+        <div class="popup-message">Are you sure you want to delete this item?</div>
+        <button onclick="confirmDelete()">Confirm</button>
+        <button onclick="cancelDelete()">Cancel</button>
     </div>
 
     <script>
         let items = [];
+        let deleteIndex = -1;
 
         function saveItemsToLocalStorage() {
             localStorage.setItem('items', JSON.stringify(items));
@@ -318,7 +336,7 @@
                         <p><strong>Location:</strong> ${item.location}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
                         <button onclick="editItem(${index}, 'search')">Edit</button>
-                        <button onclick="deleteItem(${index}, 'search')">Delete</button>
+                        <button onclick="showDeletePopup(${index}, 'search')">Delete</button>
                         <hr>
                     `;
                     resultDiv.appendChild(itemDiv);
@@ -342,7 +360,7 @@
                         <p><strong>Location:</strong> ${item.location}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
                         <button onclick="editItem(${index}, 'recent')">Edit</button>
-                        <button onclick="deleteItem(${index}, 'recent')">Delete</button>
+                        <button onclick="showDeletePopup(${index}, 'recent')">Delete</button>
                         <hr>
                     `;
                     recentItemsDiv.appendChild(itemDiv);
@@ -350,74 +368,6 @@
             } else {
                 recentItemsDiv.innerHTML = '<p>No items available.</p>';
             }
-        }
-
-        function editItem(index, source) {
-            const filteredItems = (source === 'search') ? filterItemsForSearch() : items.slice(-5).reverse();
-            const item = filteredItems[index];
-            document.getElementById('editIndex').value = items.indexOf(item);
-            document.getElementById('editCode').value = item.code;
-            document.getElementById('editName').value = item.name;
-            document.getElementById('editLocation').value = item.location;
-            document.getElementById('editMemo').value = item.memo;
-            document.getElementById('editColor').value = item.color;
-            document.getElementById('editImage').value = '';  // Clear image input
-            document.getElementById('editForm').style.display = 'block';
-            window.scrollTo(0, document.getElementById('editForm').offsetTop);  // Scroll to edit form
-        }
-
-        function saveItem() {
-            const index = document.getElementById('editIndex').value;
-            items[index].code = document.getElementById('editCode').value.trim();
-            items[index].name = document.getElementById('editName').value.trim();
-            items[index].location = document.getElementById('editLocation').value.trim();
-            items[index].memo = document.getElementById('editMemo').value.trim();
-            items[index].color = document.getElementById('editColor').value.trim();
-
-            const editImageFile = document.getElementById('editImage').files[0];
-            if (editImageFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    items[index].image = e.target.result;
-                    saveItemsToLocalStorage();
-                    alert('Item updated successfully.');
-                    cancelEdit();
-                    searchItems();  // Refresh search results
-                    displayRecentItems();  // Refresh recent items
-                };
-                reader.readAsDataURL(editImageFile);
-            } else {
-                saveItemsToLocalStorage();
-                alert('Item updated successfully.');
-                cancelEdit();
-                searchItems();  // Refresh search results
-                displayRecentItems();  // Refresh recent items
-            }
-        }
-
-        function deleteItem(index, source) {
-            const filteredItems = (source === 'search') ? filterItemsForSearch() : items.slice(-5).reverse();
-            const itemIndex = items.indexOf(filteredItems[index]);
-            items.splice(itemIndex, 1);
-            saveItemsToLocalStorage();
-            alert('Item deleted successfully.');
-            searchItems();  // Refresh search results
-            displayRecentItems();  // Refresh recent items
-        }
-
-        function cancelEdit() {
-            document.getElementById('editForm').style.display = 'none';
-        }
-
-        function filterItemsForSearch() {
-            const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
-            return items.filter(item =>
-                item.code.toLowerCase().includes(searchTerm) ||
-                item.name.toLowerCase().includes(searchTerm) ||
-                item.location.toLowerCase().includes(searchTerm) ||
-                item.memo.toLowerCase().includes(searchTerm) ||
-                item.color.toLowerCase().includes(searchTerm)
-            );
         }
 
         function addItem() {
@@ -479,8 +429,45 @@
             window.location.reload(); // Refresh the current page
         }
 
-        function goHome() {
-            window.location.href = 'index.html'; // Redirect to the home page
+        function showDeletePopup(index, source) {
+            deleteIndex = { index, source };
+            document.getElementById('deletePopup').style.display = 'block';
+        }
+
+        function confirmDelete() {
+            const { index, source } = deleteIndex;
+            if (source === 'search') {
+                deleteItem(index);
+                searchItems();
+            } else if (source === 'recent') {
+                deleteItem(index);
+                displayRecentItems();
+            }
+            document.getElementById('deletePopup').style.display = 'none';
+        }
+
+        function cancelDelete() {
+            deleteIndex = -1;
+            document.getElementById('deletePopup').style.display = 'none';
+        }
+
+        function deleteItem(index) {
+            items.splice(index, 1);
+            saveItemsToLocalStorage();
+            alert('Item deleted successfully.');
+        }
+
+        function editItem(index, source) {
+            const item = items[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editCode').value = item.code;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editLocation').value = item.location;
+            document.getElementById('editMemo').value = item.memo;
+            document.getElementById('editColor').value = item.color;
+            document.getElementById('editImage').value = '';  // Clear image input
+            document.getElementById('editForm').style.display = 'block';
+            window.scrollTo(0, document.getElementById('editForm').offsetTop);  // Scroll to edit form
         }
 
         window.onload = function() {
