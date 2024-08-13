@@ -15,7 +15,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             text-shadow: 2px 2px #000;
         }
@@ -37,6 +37,48 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             border-left: 8px solid #ff6347;
             text-align: center;
+        }
+
+        .action-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .action-container > div {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        input[type="text"], input[type="file"], button {
+            padding: 15px;
+            font-size: 1.1em;
+            margin: 12px 0;
+            width: calc(100% - 30px);
+            box-sizing: border-box;
+            border: 2px solid #555;
+            border-radius: 6px;
+            background-color: #444;
+            color: #eee;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="file"]:focus {
+            background-color: #555;
+            border-color: #ff6347;
+        }
+
+        button {
+            background-color: #ff6347;
+            color: #222;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e5533d;
+            transform: translateY(-2px);
         }
 
         .recent-items {
@@ -89,16 +131,34 @@
     <h1>재고 관리 시스템</h1>
 
     <div class="container">
-        <button class="inventory-button" onclick="goToInventory()">재고 목록 보기</button>
-
-        <div class="recent-items" id="recentItems">
-            <h2>최근 등록된 아이템</h2>
-            <!-- 최근 등록된 아이템 목록이 여기에 표시됩니다. -->
+        <div class="action-container">
+            <div>
+                <h2>아이템 추가</h2>
+                <input type="text" id="newCode" placeholder="아이템 코드">
+                <input type="text" id="newName" placeholder="아이템 이름">
+                <input type="text" id="newLocation" placeholder="위치">
+                <input type="text" id="newMemo" placeholder="메모">
+                <input type="text" id="newColor" placeholder="색상">
+                <input type="file" id="newImage" accept="image/*" capture="camera">
+                <button onclick="addItem()">추가</button>
+            </div>
+            <div>
+                <h2>최근 등록된 아이템</h2>
+                <div class="recent-items" id="recentItems">
+                    <!-- 최근 등록된 아이템 목록이 여기에 표시됩니다. -->
+                </div>
+            </div>
         </div>
+
+        <button class="inventory-button" onclick="goToInventory()">재고 목록 보기</button>
     </div>
 
     <script>
         let items = [];
+
+        function saveItemsToLocalStorage() {
+            localStorage.setItem('items', JSON.stringify(items));
+        }
 
         function loadItemsFromLocalStorage() {
             const savedItems = localStorage.getItem('items');
@@ -109,7 +169,7 @@
 
         function displayRecentItems() {
             const recentItemsDiv = document.getElementById('recentItems');
-            recentItemsDiv.innerHTML = '<h2>최근 등록된 아이템</h2>'; // 초기화 후 제목 다시 추가
+            recentItemsDiv.innerHTML = ''; // 기존 내용을 초기화
 
             if (items.length > 0) {
                 const recentItems = items.slice(-5).reverse(); // 최근 5개의 아이템만 표시
@@ -125,8 +185,59 @@
                     recentItemsDiv.appendChild(itemDiv);
                 });
             } else {
-                recentItemsDiv.innerHTML += '<p>아이템이 없습니다.</p>';
+                recentItemsDiv.innerHTML = '<p>아이템이 없습니다.</p>';
             }
+        }
+
+        function addItem() {
+            const newCode = document.getElementById('newCode').value.trim();
+            const newName = document.getElementById('newName').value.trim();
+            const newLocation = document.getElementById('newLocation').value.trim();
+            const newMemo = document.getElementById('newMemo').value.trim();
+            const newColor = document.getElementById('newColor').value.trim();
+            const newImageFile = document.getElementById('newImage').files[0];
+
+            if (newCode && newName && newLocation) {
+                let newItem = {
+                    code: newCode,
+                    name: newName,
+                    location: newLocation,
+                    memo: newMemo,
+                    color: newColor,
+                    date: new Date().toISOString(),
+                    image: ''
+                };
+
+                if (newImageFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        newItem.image = e.target.result;
+                        items.push(newItem);
+                        saveItemsToLocalStorage();
+                        alert('아이템이 추가되었습니다.');
+                        clearAddItemForm();
+                        displayRecentItems();  // 새로고침 없이 추가된 아이템을 즉시 표시
+                    };
+                    reader.readAsDataURL(newImageFile);
+                } else {
+                    items.push(newItem);
+                    saveItemsToLocalStorage();
+                    alert('아이템이 추가되었습니다.');
+                    clearAddItemForm();
+                    displayRecentItems();  // 새로고침 없이 추가된 아이템을 즉시 표시
+                }
+            } else {
+                alert('아이템 코드, 이름 및 위치를 입력해주세요.');
+            }
+        }
+
+        function clearAddItemForm() {
+            document.getElementById('newCode').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newLocation').value = '';
+            document.getElementById('newMemo').value = '';
+            document.getElementById('newColor').value = '';
+            document.getElementById('newImage').value = '';
         }
 
         function goToInventory() {
