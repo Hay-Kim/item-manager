@@ -27,7 +27,7 @@
         .container {
             width: 100%;
             max-width: 600px;
-            margin-top: 50px;
+            margin-top: 20px;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
@@ -111,6 +111,7 @@
 
         window.onload = function() {
             loadItemsFromLocalStorage();
+            window.scrollTo(0, 0);  // 페이지 로드 시 맨 위로 스크롤
         }
 
         function handleKeyDown(event) {
@@ -146,8 +147,8 @@
                 resultDiv.innerHTML = `<p class="no-result">해당 조건에 맞는 아이템을 찾을 수 없습니다.</p>`;
             }
 
-            // 검색 결과 표시 후 스크롤을 맨 위로 이동
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // 검색 후 화면을 맨 위로 스크롤
+            window.scrollTo(0, 0);
         }
 
         function addItem() {
