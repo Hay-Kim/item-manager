@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Item Manager</title>
+    <title>재고 관리 시스템</title>
     <style>
         body {
             font-family: 'Courier New', monospace;
@@ -18,7 +18,6 @@
             justify-content: flex-start;
             min-height: 100vh;
             text-shadow: 2px 2px #000;
-            position: relative;
         }
 
         h1 {
@@ -29,22 +28,10 @@
             text-transform: uppercase;
         }
 
-        .logo {
-            width: 120px;
-            margin-top: 30px;
-            cursor: pointer;
-            filter: drop-shadow(0 0 5px #ff6347);
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: rotate(-10deg) scale(1.1);
-        }
-
         .container {
             width: 80%;
             max-width: 700px;
-            margin-top: 40px;
+            margin-top: 30px;
             padding: 25px;
             background-color: #333;
             border-radius: 12px;
@@ -52,38 +39,7 @@
             border-left: 8px solid #ff6347;
         }
 
-        input[type="text"], input[type="file"], button {
-            padding: 15px;
-            font-size: 1.1em;
-            margin: 12px 0;
-            width: calc(100% - 30px);
-            box-sizing: border-box;
-            border: 2px solid #555;
-            border-radius: 6px;
-            background-color: #444;
-            color: #eee;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        input[type="text"]:focus, input[type="file"]:focus {
-            background-color: #555;
-            border-color: #ff6347;
-        }
-
-        button {
-            background-color: #ff6347;
-            color: #222;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #e5533d;
-            transform: translateY(-2px);
-        }
-
-        .result {
+        .recent-items {
             margin-top: 25px;
             padding: 15px;
             background-color: #444;
@@ -94,19 +50,35 @@
             border-left: 5px solid #ff6347;
         }
 
-        .result img {
+        .recent-items p {
+            margin: 10px 0;
+        }
+
+        .recent-items img {
             max-width: 100px;
             height: auto;
             margin-top: 10px;
             border-radius: 5px;
+            display: block;
         }
 
-        .no-result {
-            color: #ff6347;
+        .recent-items button {
+            margin-right: 10px;
+            background-color: #ff6347;
+            color: #222;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .recent-items button:hover {
+            background-color: #e5533d;
         }
 
         .inventory-button {
-            margin-top: 60px;
+            margin-top: 40px;
             padding: 15px;
             background-color: #6c757d;
             color: #fff;
@@ -117,326 +89,9 @@
             box-sizing: border-box;
             border-radius: 8px;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            text-align: center;
         }
 
         .inventory-button:hover {
             background-color: #555;
-            transform: translateY(-3px);
-        }
-
-        .action-container {
-            margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .action-container > div {
-            flex: 1;
-        }
-
-        .action-container h2 {
-            font-size: 1.5em;
-            color: #ff6347;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #ff6347;
-            padding-bottom: 5px;
-        }
-
-        .edit-form {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #444;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            box-sizing: border-box;
-            border-left: 5px solid #ff6347;
-        }
-
-        .sort-filter-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        .sort-filter-container select {
-            padding: 10px;
-            font-size: 1em;
-            background-color: #444;
-            color: #eee;
-            border: 2px solid #555;
-            border-radius: 6px;
-            margin-right: 10px;
-        }
-
-        .sort-filter-container button {
-            background-color: #ff6347;
-            color: #222;
-            border: none;
-            cursor: pointer;
-            padding: 10px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .sort-filter-container button:hover {
-            background-color: #e5533d;
-        }
-    </style>
-</head>
-
-<body>
-    <img src="https://pngimg.com/uploads/box/box_PNG5.png" alt="홈 로고" class="logo" onclick="refreshPage()">
-
-    <h1>Item Freak</h1>
-
-    <div class="container">
-        <h2>Search</h2>
-        <input type="text" id="searchTerm" placeholder="Enter search term" onkeydown="handleKeyDown(event)">
-        <button onclick="searchItem()">Search</button>
-        <div class="sort-filter-container">
-            <label for="sortCriteria">Sort by:</label>
-            <select id="sortCriteria">
-                <option value="name">Name</option>
-                <option value="code">Code</option>
-                <option value="location">Location</option>
-            </select>
-            <label for="sortOrder">Order:</label>
-            <select id="sortOrder">
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-            </select>
-            <button onclick="sortItems()">Sort</button>
-        </div>
-        <div class="result" id="result"></div>
-    </div>
-
-    <div class="container action-container">
-        <div>
-            <h2>Add Item</h2>
-            <input type="text" id="newCode" placeholder="Item Code">
-            <input type="text" id="newName" placeholder="Item Name">
-            <input type="text" id="newLocation" placeholder="Location">
-            <input type="text" id="newMemo" placeholder="Memo">
-            <input type="text" id="newColor" placeholder="Color">
-            <!-- 사진 업로드 기능 -->
-            <input type="file" id="newImage" accept="image/*" capture="camera">
-            <button onclick="addItem()">Add</button>
-        </div>
-    </div>
-
-    <!-- 수정 폼 -->
-    <div class="container edit-form" id="editForm">
-        <h2>Edit Item</h2>
-        <input type="hidden" id="editIndex">
-        <input type="text" id="editCode" placeholder="Item Code">
-        <input type="text" id="editName" placeholder="Item Name">
-        <input type="text" id="editLocation" placeholder="Location">
-        <input type="text" id="editMemo" placeholder="Memo">
-        <input type="text" id="editColor" placeholder="Color">
-        <!-- 사진 업로드 기능 -->
-        <input type="file" id="editImage" accept="image/*" capture="camera">
-        <button onclick="saveItem()">Save</button>
-        <button onclick="cancelEdit()">Cancel</button>
-    </div>
-
-    <button class="inventory-button" onclick="goToInventory()">Check Inventory</button>
-
-    <!-- 개발자 이름 추가 -->
-    <div style="text-align: center; margin-top: 20px; color: #bbb;">
-        <p>Developed by 지중해</p>
-    </div>
-
-    <script>
-        let items = [];
-
-        function saveItemsToLocalStorage() {
-            localStorage.setItem('items', JSON.stringify(items));
-        }
-
-        function loadItemsFromLocalStorage() {
-            const savedItems = localStorage.getItem('items');
-            if (savedItems) {
-                items = JSON.parse(savedItems);
-            }
-        }
-
-        function refreshPage() {
-            window.location.reload(); // 페이지 새로고침
-        }
-
-        function goToInventory() {
-            window.location.href = 'inventory.html'; // 재고 확인 페이지로 이동
-        }
-
-        window.onload = function() {
-            loadItemsFromLocalStorage();
-            window.scrollTo(0, 0);  // 페이지 로드 시 맨 위로 스크롤
-        }
-
-        function handleKeyDown(event) {
-            if (event.key === "Enter" || event.keyCode === 13) {
-                searchItem();
-            }
-        }
-
-        function searchItem() {
-            const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = ''; // 검색 결과 초기화
-
-            const results = items.filter(item => 
-                item.code.toLowerCase().includes(searchTerm) || 
-                item.name.toLowerCase().includes(searchTerm)
-            );
-            
-            if (results.length > 0) {
-                results.forEach((item, index) => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.innerHTML = `
-                        <p><strong>Item Code:</strong> ${item.code}</p>
-                        <p><strong>Item Name:</strong> ${item.name}</p>
-                        <p><strong>Location:</strong> ${item.location}</p>
-                        <p><strong>Memo:</strong> ${item.memo}</p>
-                        <p><strong>Color:</strong> ${item.color}</p>
-                        ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 100px; height: auto;">` : ''}
-                        <button onclick="editItem(${index})">Edit</button>
-                        <button onclick="deleteItem(${index})">Delete</button>
-                        <hr>
-                    `;
-                    resultDiv.appendChild(itemDiv);
-                });
-            } else {
-                resultDiv.innerHTML = `<p class="no-result">No items found matching the criteria.</p>`;
-            }
-
-            // 검색 후 화면을 맨 위로 스크롤
-            window.scrollTo(0, 0);
-        }
-
-        function sortItems() {
-            const criteria = document.getElementById('sortCriteria').value;
-            const order = document.getElementById('sortOrder').value;
-
-            items.sort((a, b) => {
-                let comparison = 0;
-
-                if (a[criteria] > b[criteria]) {
-                    comparison = 1;
-                } else if (a[criteria] < b[criteria]) {
-                    comparison = -1;
-                }
-
-                return order === 'asc' ? comparison : -comparison;
-            });
-
-            searchItem();  // 정렬 후 목록을 다시 표시
-        }
-
-        function addItem() {
-            const newCode = document.getElementById('newCode').value.trim();
-            const newName = document.getElementById('newName').value.trim();
-            const newLocation = document.getElementById('newLocation').value.trim();
-            const newMemo = document.getElementById('newMemo').value.trim();
-            const newColor = document.getElementById('newColor').value.trim();
-            const newImageFile = document.getElementById('newImage').files[0];
-
-            if (newCode && newName && newLocation) {
-                let newItem = {
-                    code: newCode,
-                    name: newName,
-                    location: newLocation,
-                    memo: newMemo,
-                    color: newColor,
-                    image: ''
-                };
-
-                if (newImageFile) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        newItem.image = e.target.result;
-                        items.push(newItem);
-                        saveItemsToLocalStorage();
-                        alert('Item added successfully.');
-                        clearAddItemForm();
-                        searchItem();  // 새로고침 없이 추가된 아이템을 즉시 표시
-                    };
-                    reader.readAsDataURL(newImageFile);
-                } else {
-                    items.push(newItem);
-                    saveItemsToLocalStorage();
-                    alert('Item added successfully.');
-                    clearAddItemForm();
-                    searchItem();  // 새로고침 없이 추가된 아이템을 즉시 표시
-                }
-            } else {
-                alert('Please enter item code, name, and location.');
-            }
-        }
-
-        function clearAddItemForm() {
-            document.getElementById('newCode').value = '';
-            document.getElementById('newName').value = '';
-            document.getElementById('newLocation').value = '';
-            document.getElementById('newMemo').value = '';
-            document.getElementById('newColor').value = '';
-            document.getElementById('newImage').value = '';
-        }
-
-        function deleteItem(index) {
-            items.splice(index, 1);
-            saveItemsToLocalStorage();
-            alert('Item deleted successfully.');
-            searchItem();  // 새로고침 없이 삭제된 결과를 즉시 표시
-        }
-
-        function editItem(index) {
-            const item = items[index];
-            document.getElementById('editIndex').value = index;
-            document.getElementById('editCode').value = item.code;
-            document.getElementById('editName').value = item.name;
-            document.getElementById('editLocation').value = item.location;
-            document.getElementById('editMemo').value = item.memo;
-            document.getElementById('editColor').value = item.color;
-            document.getElementById('editImage').value = '';  // 이미지 입력 초기화
-            document.getElementById('editForm').style.display = 'block';
-            window.scrollTo(0, document.getElementById('editForm').offsetTop);  // 수정 폼으로 스크롤 이동
-        }
-
-        function saveItem() {
-            const index = document.getElementById('editIndex').value;
-            items[index].code = document.getElementById('editCode').value.trim();
-            items[index].name = document.getElementById('editName').value.trim();
-            items[index].location = document.getElementById('editLocation').value.trim();
-            items[index].memo = document.getElementById('editMemo').value.trim();
-            items[index].color = document.getElementById('editColor').value.trim();
-
-            const editImageFile = document.getElementById('editImage').files[0];
-            if (editImageFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    items[index].image = e.target.result;
-                    saveItemsToLocalStorage();
-                    alert('Item updated successfully.');
-                    cancelEdit();
-                    searchItem();  // 새로고침 없이 수정된 결과를 즉시 표시
-                };
-                reader.readAsDataURL(editImageFile);
-            } else {
-                saveItemsToLocalStorage();
-                alert('Item updated successfully.');
-                cancelEdit();
-                searchItem();  // 새로고침 없이 수정된 결과를 즉시 표시
-            }
-        }
-
-        function cancelEdit() {
-            document.getElementById('editForm').style.display = 'none';
-        }
-    </script>
-</body>
-
-</html>
+            transform
