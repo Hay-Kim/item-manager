@@ -54,6 +54,13 @@
             margin: 10px 0;
         }
 
+        .item-list img {
+            max-width: 100px;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
         .back-button {
             margin-top: 40px;
             padding: 15px;
@@ -102,6 +109,7 @@
                         <p><strong>Location:</strong> ${item.location}</p>
                         <p><strong>Memo:</strong> ${item.memo}</p>
                         <p><strong>Color:</strong> ${item.color}</p>
+                        <img src="${item.image}" alt="${item.name}">
                         <hr>
                     `;
                     itemListDiv.appendChild(itemDiv);
