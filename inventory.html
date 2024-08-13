@@ -119,9 +119,9 @@
         <div class="edit-form" id="editForm">
             <h2>Edit Item</h2>
             <input type="hidden" id="editIndex">
-            <input type="text" id="editCode" placeholder="*Item Code*">
-            <input type="text" id="editName" placeholder="*Item Name*">
-            <input type="text" id="editLocation" placeholder="*Location*">
+            <input type="text" id="editCode" placeholder="*Item Code*" required>
+            <input type="text" id="editName" placeholder="*Item Name*" required>
+            <input type="text" id="editLocation" placeholder="*Location*" required>
             <input type="text" id="editMemo" placeholder="Memo">
             <input type="text" id="editColor" placeholder="Color">
             <input type="file" id="editImage" accept="image/*" capture="camera">
@@ -213,6 +213,10 @@
                 cancelEdit();
                 displayItems();  // 새로고침 없이 수정된 결과를 즉시 표시
             }
+        }
+
+        function saveItemsToLocalStorage() {
+            localStorage.setItem('items', JSON.stringify(items));
         }
 
         function deleteItem(index) {
