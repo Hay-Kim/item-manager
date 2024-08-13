@@ -181,6 +181,42 @@
             box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
             border: 1px solid #000;
         }
+
+        /* 삭제 확인 팝업 스타일 */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #FFF;
+            padding: 20px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .popup-message {
+            margin-bottom: 20px;
+            font-size: 1em;
+            color: #000;
+        }
+
+        .popup button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #7D7D7D;
+            color: #FFF;
+            font-size: 1em;
+        }
+
+        .popup button:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 
@@ -233,6 +269,13 @@
             </div>
             <button class="back-button" onclick="goBack()">Go Back</button>
 
+            <!-- 삭제 확인 팝업 -->
+            <div id="deletePopup" class="popup">
+                <div class="popup-message">Are you sure you want to delete this item?</div>
+                <button onclick="confirmDelete()">Confirm</button>
+                <button onclick="cancelDelete()">Cancel</button>
+            </div>
+
             <!-- Developer Name -->
             <div style="text-align: center; margin-top: 20px; color: #000;">
                 <p>Developed by 지중해</p>
@@ -242,6 +285,7 @@
 
     <script>
         let items = [];
+        let deleteIndex = null;
 
         function loadItemsFromLocalStorage() {
             const savedItems = localStorage.getItem('items');
@@ -265,7 +309,7 @@
                         <p><strong>Color:</strong> ${item.color}</p>
                         ${item.image ? `<img src="${item.image}" alt="${item.name}">` : ''}
                         <button onclick="editItem(${index})">Edit</button>
-                        <button onclick="deleteItem(${index})">Delete</button>
+                        <button onclick="promptDelete(${index})">Delete</button>
                         <hr>
                     `;
                     itemListDiv.appendChild(itemDiv);
@@ -362,11 +406,24 @@
             localStorage.setItem('items', JSON.stringify(items));
         }
 
-        function deleteItem(index) {
-            items.splice(index, 1);
-            saveItemsToLocalStorage();
-            alert('Item deleted successfully.');
-            displayItems();  // Refresh the list without reloading
+        function promptDelete(index) {
+            deleteIndex = index;
+            document.getElementById('deletePopup').style.display = 'block';
+        }
+
+        function confirmDelete() {
+            if (deleteIndex !== null) {
+                items.splice(deleteIndex, 1);
+                saveItemsToLocalStorage();
+                alert('Item deleted successfully.');
+                displayItems();  // Refresh the list without reloading
+                document.getElementById('deletePopup').style.display = 'none';
+            }
+        }
+
+        function cancelDelete() {
+            document.getElementById('deletePopup').style.display = 'none';
+            deleteIndex = null;
         }
 
         function cancelEdit() {
