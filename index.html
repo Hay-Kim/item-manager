@@ -11,7 +11,7 @@
             background-color: #222;
             color: #eee;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -23,7 +23,7 @@
         h1 {
             color: #ff6347;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             font-size: 2.5em;
             text-transform: uppercase;
         }
@@ -51,7 +51,7 @@
             border-left: 8px solid #ff6347;
         }
 
-        input[type="text"], button {
+        input[type="text"], input[type="file"], button {
             padding: 15px;
             font-size: 1.1em;
             margin: 12px 0;
@@ -64,7 +64,7 @@
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus, input[type="file"]:focus {
             background-color: #555;
             border-color: #ff6347;
         }
@@ -91,6 +91,13 @@
             width: 100%;
             box-sizing: border-box;
             border-left: 5px solid #ff6347;
+        }
+
+        .result img {
+            max-width: 100px;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 5px;
         }
 
         .no-result {
@@ -157,6 +164,8 @@
             <input type="text" id="newLocation" placeholder="Location">
             <input type="text" id="newMemo" placeholder="Memo">
             <input type="text" id="newColor" placeholder="Color">
+            <!-- 사진 업로드 기능 -->
+            <input type="file" id="newImage" accept="image/*" capture="camera">
             <button onclick="addItem()">Add</button>
         </div>
         <div>
@@ -220,6 +229,7 @@
                         <p><strong>Location:</strong> ${item.location}</p>
                         <p><strong>Memo:</strong> ${item.memo}</p>
                         <p><strong>Color:</strong> ${item.color}</p>
+                        <img src="${item.image}" alt="${item.name}" style="width: 100px; height: auto;">
                         <hr>
                     `;
                     resultDiv.appendChild(itemDiv);
@@ -238,18 +248,34 @@
             const newLocation = document.getElementById('newLocation').value.trim();
             const newMemo = document.getElementById('newMemo').value.trim();
             const newColor = document.getElementById('newColor').value.trim();
+            const newImageFile = document.getElementById('newImage').files[0];
 
             if (newCode && newName && newLocation) {
-                items.push({
+                let newItem = {
                     code: newCode,
                     name: newName,
                     location: newLocation,
                     memo: newMemo,
-                    color: newColor
-                });
-                saveItemsToLocalStorage();
-                alert('Item added successfully.');
-                clearAddItemForm();
+                    color: newColor,
+                    image: ''
+                };
+
+                if (newImageFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        newItem.image = e.target.result;
+                        items.push(newItem);
+                        saveItemsToLocalStorage();
+                        alert('Item added successfully.');
+                        clearAddItemForm();
+                    };
+                    reader.readAsDataURL(newImageFile);
+                } else {
+                    items.push(newItem);
+                    saveItemsToLocalStorage();
+                    alert('Item added successfully.');
+                    clearAddItemForm();
+                }
             } else {
                 alert('Please enter item code, name, and location.');
             }
@@ -261,6 +287,7 @@
             document.getElementById('newLocation').value = '';
             document.getElementById('newMemo').value = '';
             document.getElementById('newColor').value = '';
+            document.getElementById('newImage').value = '';
         }
 
         function deleteItem() {
