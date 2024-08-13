@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Manager</title>
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .search-container, .add-item-container, .delete-item-container {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        input[type="text"], button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+            width: calc(100% - 20px);
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-result {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>물건 위치 검색 및 관리</h1>
+    <div class="search-container">
+        <input type="text" id="searchTerm" placeholder="검색어를 입력하세요" onkeydown="handleKeyDown(event)">
+        <button onclick="searchItem()">검색</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <h2>새 아이템 추가</h2>
+    <div class="add-item-container">
+        <input type="text" id="newCode" placeholder="아이템 코드">
+        <input type="text" id="newName" placeholder="아이템 이름">
+        <input type="text" id="newLocation" placeholder="위치">
+        <input type="text" id="newMemo" placeholder="메모">
+        <input type="text" id="newColor" placeholder="색상">
+        <button onclick="addItem()">아이템 추가</button>
+    </div>
+
+    <h2>아이템 삭제</h2>
+    <div class="delete-item-container">
+        <input type="text" id="deleteCode" placeholder="삭제할 아이템 코드">
+        <button onclick="deleteItem()">아이템 삭제</button>
+    </div>
+
+    <script>
+        let items = [];
+
+        function saveItemsToLocalStorage() {
+            localStorage.setItem('items', JSON.stringify(items));
+        }
+
+        function loadItemsFromLocalStorage() {
+            const savedItems = localStorage.getItem('items');
+            if (savedItems) {
+                items = JSON.parse(savedItems);
+            }
+        }
+
+        window.onload = function() {
+            loadItemsFromLocalStorage();
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === "Enter" || event.keyCode === 13) {
+                searchItem();
+            }
+        }
+
+        function searchItem() {
+            const searchTerm = document.getElementById('searchTerm').value.toLowerCase().trim();
+            const resultDiv = document.getElementById('result');
+            const results = items.filter(item => item.code.toLowerCase().includes(searchTerm) || item.name.toLowerCase().includes(searchTerm));
+            
+            if (results.length > 0) {
+                resultDiv.innerHTML = results.map(item => `
+                    <p><strong>아이템 코드:</strong> ${item.code}</p>
+                    <p><strong>아이템 이름:</strong> ${item.name}</p>
+                    <p><strong>위치:</strong> ${item.location}</p>
+                    <p><strong>메모:</strong> ${item.memo}</p>
+                    <p><strong>색상:</strong> ${item.color}</p>
+                    <hr>
+                `).join('');
+            } else {
+                resultDiv.innerHTML = `<p class="no-result">해당 조건에 맞는 아이템을 찾을 수 없습니다.</p>`;
+            }
+        }
+
+        function addItem() {
+            const newCode = document.getElementById('newCode').value.trim();
+            const newName = document.getElementById('newName').value.trim();
+            const newLocation = document.getElementById('newLocation').value.trim();
+            const newMemo = document.getElementById('newMemo').value.trim();
+            const newColor = document.getElementById('newColor').value.trim();
+
+            if (newCode && newName && newLocation) {
+                items.push({
+                    code: newCode,
+                    name: newName,
+                    location: newLocation,
+                    memo: newMemo,
+                    color: newColor
+                });
+                saveItemsToLocalStorage();
+                alert('아이템이 추가되었습니다.');
+                clearAddItemForm();
+            } else {
+                alert('아이템 코드, 이름 및 위치를 입력해주세요.');
+            }
+        }
+
+        function clearAddItemForm() {
+            document.getElementById('newCode').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newLocation').value = '';
+            document.getElementById('newMemo').value = '';
+            document.getElementById('newColor').value = '';
+        }
+
+        function deleteItem() {
+            const deleteCode = document.getElementById('deleteCode').value.trim();
+
+            if (deleteCode) {
+                items = items.filter(item => item.code !== deleteCode);
+                saveItemsToLocalStorage();
+                alert('아이템이 삭제되었습니다.');
+            } else {
+                alert('삭제할 아이템 코드를 입력해주세요.');
+            }
+        }
+    </script>
+</body>
+
+</html>
